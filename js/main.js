@@ -1,4 +1,4 @@
-window.currentGameMode = 'ai'; 
+window.currentGameMode = 'pvp'; 
 window.pendingGameToLaunch = '';
 window.aiDifficulty = 'medium'; // easy, medium, hard
 
