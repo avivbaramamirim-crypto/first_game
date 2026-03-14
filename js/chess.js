@@ -47,10 +47,14 @@ window.initChess = function() {
             if (window.currentGameMode === 'ai' && p.charAt(0) === 'b') return false;
         },
         onDrop: (s, t) => {
+            console.log('Chess onDrop - Mode:', window.currentGameMode, 'Turn before move:', chessGame.turn());
+            
             const move = chessGame.move({ from: s, to: t, promotion: 'q' });
             if (move === null) {
                 return 'snapback';
             }
+            
+            console.log('Move made:', move, 'Turn after move:', chessGame.turn());
             
             // Update position after a short delay to ensure proper rendering
             setTimeout(() => {
@@ -60,7 +64,10 @@ window.initChess = function() {
                 
                 // Trigger AI move after successful player move in AI mode
                 if (window.currentGameMode === 'ai' && chessGame.turn() === 'b') {
+                    console.log('Triggering AI move...');
                     setTimeout(makeRandomMove, 600);
+                } else {
+                    console.log('Not triggering AI - Mode:', window.currentGameMode, 'Turn:', chessGame.turn());
                 }
             }, 50);
         }
