@@ -41,19 +41,43 @@ function drawCheckers() {
 }
 
 function handleChk(r, c) {
+    // Debug: log current mode and turn
+    console.log('Checkers - Mode:', window.currentGameMode, 'Turn:', chkT, 'Click:', r, c);
+    
+    // Only restrict moves in online mode
     if (window.currentGameMode === 'online') {
         const myC = window.getMyRole() === 'w' ? 'r' : 'b';
-        if (chkT !== myC) return;
+        if (chkT !== myC) {
+            console.log('Move blocked - not your turn in online mode');
+            return;
+        }
     }
+    
     const p = chkB[r][c];
-    if (p && p.color === chkT) { chkS = { r, c }; drawCheckers(); }
+    if (p && p.color === chkT) { 
+        console.log('Piece selected:', p.color);
+        chkS = { r, c }; 
+        drawCheckers(); 
+    }
     else if (chkS) { 
         if (Math.abs(r - chkS.r) === 1 && !chkB[r][c]) {
-            chkB[r][c] = chkB[chkS.r][chkS.c]; chkB[chkS.r][chkS.c] = null;
-            chkT = chkT === 'r' ? 'b' : 'r'; chkS = null; drawCheckers();
+            console.log('Move executed');
+            chkB[r][c] = chkB[chkS.r][chkS.c]; 
+            chkB[chkS.r][chkS.c] = null;
+            chkT = chkT === 'r' ? 'b' : 'r'; 
+            chkS = null; 
+            drawCheckers();
             updateChkStatus();
-            if (window.currentGameMode === 'online') window.broadcastMove(chkB);
+            
+            // Only broadcast in online mode
+            if (window.currentGameMode === 'online') {
+                window.broadcastMove(chkB);
+            }
+        } else {
+            console.log('Invalid move');
         }
+    } else {
+        console.log('No piece selected and no selected piece to move');
     }
 }
 

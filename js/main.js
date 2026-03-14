@@ -36,6 +36,9 @@ window.launchGame = function(mode) {
     window.closeModeModal();
     window.showScreen(window.pendingGameToLaunch + '-screen');
     
+    // Debug: log the current mode
+    console.log('Launching game with mode:', mode);
+    
     const initMap = {
         'chess': window.initChess,
         'checkers': window.initCheckers,

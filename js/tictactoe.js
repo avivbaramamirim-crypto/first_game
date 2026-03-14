@@ -25,6 +25,7 @@ function drawTTT() {
 
 function handleTTT(i) {
     if (tttB[i]) return;
+    // Only restrict moves in online mode
     if (window.currentGameMode === 'online') {
         const myS = window.getMyRole() === 'w' ? 'X' : 'O';
         if (tttT !== myS) return;
@@ -33,7 +34,10 @@ function handleTTT(i) {
     tttT = tttT === 'X' ? 'O' : 'X';
     drawTTT();
     updateTTTStatus();
-    if (window.currentGameMode === 'online') window.broadcastMove(tttB);
+    // Only broadcast in online mode
+    if (window.currentGameMode === 'online') {
+        window.broadcastMove(tttB);
+    }
 }
 
 function updateTTTStatus() {
