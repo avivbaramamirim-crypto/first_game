@@ -114,6 +114,14 @@ function handleChk(r, c) {
             if (window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
             drawCheckers();
             updateChkStatus();
+            
+            // Check for win condition
+            if (checkChkWin()) {
+                const winner = chkT === 'r' ? 'שחור' : 'אדום';
+                window.triggerEndgameAnim('win', `${winner} ניצח בדמקה!`);
+                return;
+            }
+            
             if (window.currentGameMode === 'ai' && chkT === 'b') setTimeout(makeRandomMove, 800);
         } else if (isJump && !chkB[r][c]) {
             const midR = Math.floor((r + chkS.r) / 2);
@@ -179,6 +187,62 @@ function hasMandatoryJumps(color) {
         }
     }
     return false;
+}
+
+function checkChkWin() {
+    // Check if opponent has any pieces or moves
+    const opponentColor = chkT === 'r' ? 'b' : 'r';
+    let opponentPieces = 0;
+    let opponentHasMoves = false;
+    
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const piece = chkB[r][c];
+            if (piece && piece.color === opponentColor) {
+                opponentPieces++;
+                
+                // Check if this piece has any valid moves
+                let directions = [];
+                if (piece.king) {
+                    directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+                } else if (piece.color === 'r') {
+                    directions = [[-1, -1], [-1, 1]];
+                } else {
+                    directions = [[1, -1], [1, 1]];
+                }
+                
+                for (let [dr, dc] of directions) {
+                    const newR = r + dr;
+                    const newC = c + dc;
+                    
+                    // Check regular moves
+                    if (newR >= 0 && newR < 8 && newC >= 0 && newC < 8 && !chkB[newR][newC]) {
+                        opponentHasMoves = true;
+                        break;
+                    }
+                    
+                    // Check jumps
+                    const jumpR = r + (dr * 2);
+                    const jumpC = c + (dc * 2);
+                    const midR = r + dr;
+                    const midC = c + dc;
+                    
+                    if (jumpR >= 0 && jumpR < 8 && jumpC >= 0 && jumpC < 8 && 
+                        !chkB[jumpR][jumpC] && chkB[midR][midC] && 
+                        chkB[midR][midC].color !== opponentColor) {
+                        opponentHasMoves = true;
+                        break;
+                    }
+                }
+                
+                if (opponentHasMoves) break;
+            }
+        }
+        if (opponentHasMoves) break;
+    }
+    
+    // Win if opponent has no pieces or no valid moves
+    return opponentPieces === 0 || !opponentHasMoves;
 }
 
 function updateChkStatus() {

@@ -63,6 +63,11 @@ function makeRandomMove() {
                 score += 1000;
             }
             
+            // Check for pawn promotion
+            if (move.piece === 'p' && (move.to.charAt(1) === '8' || move.to.charAt(1) === '1')) {
+                score += 50;
+            }
+            
             // Check if this move puts opponent in check
             if (tempGame.in_check()) {
                 score += 50;

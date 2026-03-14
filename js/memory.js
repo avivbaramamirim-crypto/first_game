@@ -1,4 +1,4 @@
-const icons = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+const icons = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🦁', '🐯', '🐸', '🦜', '🦚', '🦩', '🦢'];
 let mCards = [], mFlipped = [], mLock = false;
 let mScore = { p1: 0, p2: 0 }, mTurn = 'p1';
 
@@ -14,13 +14,13 @@ function drawMem() {
     const b = document.getElementById('memoryBoard');
     b.innerHTML = '';
     b.style.display = 'grid'; 
-    b.style.gridTemplateColumns = 'repeat(4, 1fr)'; 
+    b.style.gridTemplateColumns = 'repeat(8, 1fr)'; 
     b.style.gap = '15px'; 
     b.style.padding = '20px';
     b.style.background = '#2c3e50';
     b.style.borderRadius = '15px';
     b.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
-    b.style.width = '400px';
+    b.style.width = '600px';
     b.style.margin = '0 auto';
 
     mCards.forEach((c, i) => {
