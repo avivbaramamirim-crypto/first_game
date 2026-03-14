@@ -20,13 +20,18 @@ window.initChess = function() {
             if (move === null) {
                 return 'snapback';
             }
+            
             // Update position after a short delay to ensure proper rendering
             setTimeout(() => {
                 chessBoard.position(chessGame.fen());
                 highlightSquare(t);
                 updateStatus();
+                
+                // Trigger AI move after successful player move in AI mode
+                if (window.currentGameMode === 'ai' && chessGame.turn() === 'b') {
+                    setTimeout(makeRandomMove, 600);
+                }
             }, 50);
-            if (window.currentGameMode === 'ai' && chessGame.turn() === 'b') setTimeout(makeRandomMove, 600);
         }
     });
     updateStatus();
