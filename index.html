@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מרכז משחקי עץ - Wood Master</title>
+    <title>מרכז משחקי עץ - Wood Master Online</title>
     
     <!-- ספריות חיצוניות -->
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
@@ -15,85 +15,113 @@
 </head>
 <body>
 
+    <!-- מודל בחירת מצב -->
     <div id="mode-modal-overlay">
         <div class="modal-box">
-            <h3 id="mode-modal-title">בחר משחק</h3>
-            <p>איך תרצה לשחק?</p>
-            <button class="mode-btn ai" onclick="window.launchGame('ai')">🤖 נגד המחשב</button>
-            <button class="mode-btn pvp" onclick="window.launchGame('pvp')">🧑‍🤝‍🧑 נגד חבר (מקומי)</button>
-            <button id="online-mode-btn" class="mode-btn" style="background:#27ae60" onclick="window.showOnlineLobby()">🌐 נגד חבר מרחוק</button>
-            <button class="mode-btn cancel" onclick="window.closeModeModal()">ביטול</button>
+            <h2 id="mode-modal-title" style="color:var(--dark-wood)">משחק</h2>
+            <p style="font-weight:bold">איך תרצו לשחק?</p>
+            <button class="mode-btn ai" onclick="window.launchGame('ai')" style="background:#c62828; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">🤖 נגד המחשב</button>
+            <button class="mode-btn pvp" onclick="window.launchGame('pvp')" style="background:#1565c0; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">🧑‍🤝‍🧑 נגד חבר (מקומי)</button>
+            <button id="online-mode-btn" class="mode-btn" onclick="window.showOnlineLobby()" style="background:#2e7d32; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">🌐 נגד חבר מרחוק</button>
+            <button onclick="window.closeModeModal()" style="background:#eee; color:#333; width:100%; padding:10px; border-radius:10px; border:none; cursor:pointer;">ביטול</button>
         </div>
     </div>
 
+    <!-- מסך לובי אונליין -->
     <div id="online-lobby-screen" class="game-screen">
-        <h2>משחק רשת</h2>
-        <div class="modal-box" style="width:100%; box-sizing:border-box">
-            <button class="menu-btn" onclick="window.createOnlineRoom()">➕ צור חדר וקבל קוד</button>
-            <div id="active-room-info" style="display:none; margin:20px 0">
-                <p>הקוד שלך: <strong id="display-room-id" style="font-size:1.5rem; color:var(--danger)"></strong></p>
-                <p>ממתין ליריב...</p>
+        <h1>משחק רשת</h1>
+        <div class="lobby-card" style="background:white; padding:30px">
+            <h3>אפשרות 1: יצירת חדר</h3>
+            <button class="action-btn" onclick="window.createOnlineRoom()" style="font-size:1.2rem; background:var(--success)">➕ צור חדר וקבל קוד</button>
+            <div id="active-room-info" style="display:none; margin-top:20px; padding:15px; background:#f1f8e9; border-radius:10px">
+                <p>הקוד שלך לשלוח לחבר:</p>
+                <strong id="display-room-id" style="font-size:2.5rem; color:var(--accent); letter-spacing:5px"></strong>
+                <p class="pulse">⏳ ממתין שהחבר יצטרף...</p>
             </div>
-            <hr>
-            <input type="text" id="room-input" placeholder="הכנס קוד שקיבלת" style="padding:10px; width:150px; text-align:center">
-            <button class="action-btn" onclick="window.joinOnlineRoom()">הצטרף</button>
+            <div style="margin:25px 0; font-weight:bold; color:#999">--- או ---</div>
+            <h3>אפשרות 2: הצטרפות לחדר</h3>
+            <div class="online-actions">
+                <input type="text" id="room-input" placeholder="קוד">
+                <button class="action-btn" onclick="window.joinOnlineRoom()" style="background:#1565c0">🔗 הצטרף</button>
+            </div>
         </div>
-        <button class="back-btn" onclick="window.location.reload()">חזור</button>
+        <button class="action-btn back-btn" onclick="window.location.reload()">חזור לתפריט</button>
     </div>
 
+    <!-- הודעת סיום -->
     <div id="endgame-overlay">
         <div class="modal-box">
             <h2 id="endgame-title">סיום!</h2>
-            <div id="endgame-icon" style="font-size:3rem">🏆</div>
-            <button class="mode-btn pvp" onclick="window.closeEndgameOverlay()">סגור</button>
+            <div id="endgame-icon" style="font-size:4rem">🏆</div>
+            <button class="action-btn" onclick="window.location.reload()" style="margin-top:20px; width:100%">חזור לתפריט הראשי</button>
         </div>
     </div>
 
     <div class="container">
+        <!-- תפריט ראשי -->
         <div id="menu-screen">
             <h1>מרכז משחקי עץ</h1>
-            <div id="connection-status" style="margin-bottom:15px; font-weight:bold">מתחבר לענן...</div>
+            <div id="connection-status" style="margin-bottom:20px; font-weight:bold; color:var(--dark-wood)">מתחבר לענן... ☁️</div>
+            
             <div class="menu-grid">
-                <button class="menu-btn" onclick="window.openModeModal('chess', '♟️ שחמט')">♟️ שחמט</button>
-                <button class="menu-btn" onclick="window.openModeModal('checkers', '🔴 דמקה')">🔴 דמקה</button>
-                <button class="menu-btn" onclick="window.openModeModal('connect4', '🟡 4 בשורה')">🟡 4 בשורה</button>
-                <button class="menu-btn" onclick="window.openModeModal('tictactoe', '❌ איקס עיגול')">❌ איקס עיגול</button>
-                <button class="menu-btn" onclick="window.openModeModal('snakes', '🐍 סולמות ונחשים')">🐍 סולמות ונחשים</button>
-                <button class="menu-btn" onclick="window.openModeModal('memory', '🦁 זיכרון')">🦁 זיכרון</button>
+                <button class="menu-btn" onclick="window.openModeModal('chess', 'שחמט')">
+                    <span class="icon">♟️</span> שחמט
+                </button>
+                <button class="menu-btn" onclick="window.openModeModal('checkers', 'דמקה')">
+                    <span class="icon">🔴</span> דמקה
+                </button>
+                <button class="menu-btn" onclick="window.openModeModal('connect4', '4 בשורה')">
+                    <span class="icon">🟡</span> 4 בשורה
+                </button>
+                <button class="menu-btn" onclick="window.openModeModal('tictactoe', 'איקס עיגול')">
+                    <span class="icon">❌</span> איקס עיגול
+                </button>
+                <button class="menu-btn" onclick="window.openModeModal('snakes', 'סולמות ונחשים')">
+                    <span class="icon">🐍</span> סולמות ונחשים
+                </button>
+                <button class="menu-btn" onclick="window.openModeModal('memory', 'משחק זיכרון')">
+                    <span class="icon">🦁</span> זיכרון
+                </button>
             </div>
         </div>
 
-        <!-- לוחות -->
+        <!-- מסכי משחק -->
         <div id="chess-screen" class="game-screen">
             <h2>שחמט</h2>
             <div id="chessBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="chess-status" class="status-bar"></div><button class="back-btn" onclick="location.reload()">חזור</button></div>
+            <div class="info-panel"><div id="chess-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
         </div>
 
         <div id="checkers-screen" class="game-screen">
             <h2>דמקה</h2>
             <div id="checkersBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="chk-status" class="status-bar"></div><button class="back-btn" onclick="location.reload()">חזור</button></div>
+            <div class="info-panel"><div id="chk-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
         </div>
 
         <div id="connect4-screen" class="game-screen">
-            <h2>ארבע בשורה</h2>
-            <div id="c4Board" class="game-board-container" style="height:400px"></div>
-            <div class="info-panel"><div id="c4-status" class="status-bar"></div><button class="back-btn" onclick="location.reload()">חזור</button></div>
+            <h2>4 בשורה</h2>
+            <div id="c4Board" class="game-board-container" style="height:450px"></div>
+            <div class="info-panel"><div id="c4-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
         </div>
 
         <div id="memory-screen" class="game-screen">
-            <h2>זיכרון</h2>
-            <div id="mem-score-box" class="score-display"></div>
-            <div id="memoryBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="mem-status" class="status-bar"></div><button class="back-btn" onclick="location.reload()">חזור</button></div>
+            <h2>משחק זיכרון</h2>
+            <div id="mem-score-box" style="font-size:1.2rem; font-weight:bold; margin-bottom:10px"></div>
+            <div id="memoryBoard" class="game-board-container" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; padding:10px"></div>
+            <div class="info-panel"><div id="mem-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
         </div>
 
         <div id="snakes-screen" class="game-screen">
             <h2>סולמות ונחשים</h2>
-            <button id="snk-dice-btn" class="menu-btn" onclick="window.rollSnakesDice()">🎲 הטל קובייה</button>
+            <button id="snk-dice-btn" class="action-btn" onclick="window.rollSnakesDice()" style="margin-bottom:15px; font-size:1.5rem">🎲 הטל קובייה</button>
             <div id="snakesBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="snk-status" class="status-bar"></div><button class="back-btn" onclick="location.reload()">חזור</button></div>
+            <div class="info-panel"><div id="snk-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+        </div>
+
+        <div id="tictactoe-screen" class="game-screen">
+            <h2>איקס עיגול</h2>
+            <div id="tttBoard" class="game-board-container" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; background:var(--dark-wood); padding:10px"></div>
+            <div class="info-panel"><div id="ttt-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
         </div>
     </div>
 
