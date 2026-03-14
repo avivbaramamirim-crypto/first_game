@@ -4,6 +4,15 @@
 let chkB = [], chkT = 'r', chkS = null;
 
 window.initCheckers = function() {
+    const boardEl = document.getElementById('checkersBoard');
+    if (!boardEl) {
+        console.error('Checkers board element not found');
+        return;
+    }
+    
+    // Force clean DOM
+    boardEl.innerHTML = '';
+    
     chkB = Array(8).fill(null).map(() => Array(8).fill(null));
     for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 !== 0) chkB[r][c] = { color: 'b', king: false };
     for (let r = 5; r < 8; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 !== 0) chkB[r][c] = { color: 'r', king: false };

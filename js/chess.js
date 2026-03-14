@@ -2,9 +2,32 @@ var chessBoard = null;
 var chessGame = new Chess();
 
 window.initChess = function() {
-    if (chessBoard) chessBoard.destroy();
+    // Ensure board element exists and is clean
+    const boardEl = document.getElementById('chessBoard');
+    if (!boardEl) {
+        console.error('Chess board element not found');
+        return;
+    }
+    
+    // Force clean DOM state
+    boardEl.innerHTML = '';
+    
+    if (chessBoard) {
+        try {
+            chessBoard.destroy();
+        } catch (e) {
+            console.warn('Chess board destroy failed:', e);
+        }
+    }
+    
     chessGame = new Chess();
-    let orient = (window.currentGameMode === 'online' && window.getMyRole() === 'b') ? 'black' : 'white';
+    let orient = 'white'; // Default orientation
+    
+    // Only set black orientation in online mode with proper role
+    if (window.currentGameMode === 'online' && typeof window.getMyRole === 'function') {
+        const role = window.getMyRole();
+        orient = role === 'b' ? 'black' : 'white';
+    }
 
     chessBoard = Chessboard('chessBoard', {
         draggable: true, 
@@ -144,12 +167,22 @@ function makeRandomMove() {
         }
         
         // Execute the best move found
-        chessGame.move(bestMove.san);
-        chessBoard.position(chessGame.fen());
-        chessBoard.clearHighlights();
-        updateStatus();
-        
-        console.log(`AI (${window.aiDifficulty}) made move:`, bestMove.san, 'with score:', bestScore.toFixed(1));
+        if (bestMove && bestMove.san) {
+            chessGame.move(bestMove.san);
+            chessBoard.position(chessGame.fen());
+            chessBoard.clearHighlights();
+            updateStatus();
+            
+            console.log(`AI (${window.aiDifficulty}) made move:`, bestMove.san, 'with score:', bestScore.toFixed(1));
+        } else {
+            // Fallback: make a random move if something went wrong
+            const randomMove = moves[Math.floor(Math.random() * moves.length)];
+            chessGame.move(randomMove.san);
+            chessBoard.position(chessGame.fen());
+            chessBoard.clearHighlights();
+            updateStatus();
+            console.log(`AI (${window.aiDifficulty}) made fallback move:`, randomMove.san);
+        }
         
         // Check for game end
         if (chessGame.game_over()) {

@@ -3,9 +3,25 @@ let mCards = [], mFlipped = [], mLock = false;
 let mScore = { p1: 0, p2: 0 }, mTurn = 'p1';
 
 window.initMemory = function() {
-    mScore = { p1: 0, p2: 0 }; mTurn = 'p1'; mFlipped = []; mLock = false;
+    // Reset all game state first
+    mScore = { p1: 0, p2: 0 }; 
+    mTurn = 'p1'; 
+    mFlipped = []; 
+    mLock = false;
+    
+    const boardEl = document.getElementById('memoryBoard');
+    if (!boardEl) {
+        console.error('Memory board element not found');
+        return;
+    }
+    
+    // Force clean DOM
+    boardEl.innerHTML = '';
+    
+    // Initialize game data
     const deck = [...icons, ...icons].sort(() => Math.random() - 0.5);
     mCards = deck.map((a, i) => ({ a, open: false, match: false }));
+    
     updateMemUI();
     drawMem();
 };

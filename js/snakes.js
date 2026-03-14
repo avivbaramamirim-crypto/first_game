@@ -8,6 +8,15 @@ const BoardSL = {
 };
 
 window.initSnakes = function() {
+    const boardEl = document.getElementById('snakesBoard');
+    if (!boardEl) {
+        console.error('Snakes board element not found');
+        return;
+    }
+    
+    // Force clean DOM
+    boardEl.innerHTML = '';
+    
     sP = [1, 1]; sT = 0;
     updateSnkUI(); drawSnakes();
 };

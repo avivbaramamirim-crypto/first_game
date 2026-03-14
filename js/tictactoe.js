@@ -4,11 +4,21 @@
 let tttB = Array(9).fill(null), tttT = 'X';
 
 window.initTicTacToe = function() {
-    tttB = Array(9).fill(null); tttT = 'X';
-    if (document.getElementById('tttBoard')) {
-        drawTTT();
-        updateTTTStatus();
+    tttB = Array(9).fill(null); 
+    tttT = 'X';
+    
+    const boardEl = document.getElementById('tttBoard');
+    if (!boardEl) {
+        console.error('TicTacToe board element not found');
+        return;
     }
+    
+    // Ensure clean state
+    boardEl.innerHTML = '';
+    boardEl.style.display = 'grid';
+    
+    drawTTT();
+    updateTTTStatus();
 };
 
 function checkTTTWin() {
