@@ -48,7 +48,6 @@ window.showOnlineLobby = function() {
 window.launchGame = function(mode) {
     window.currentGameMode = mode;
     window.closeModeModal();
-    window.showScreen(window.pendingGameToLaunch + '-screen');
     
     console.log('Launching game with mode:', mode);
     
@@ -64,7 +63,11 @@ window.launchGame = function(mode) {
     const initFn = initMap[window.pendingGameToLaunch];
     if (typeof initFn === 'function') {
         try {
+            // Initialize game FIRST, then show screen with small delay
             initFn();
+            setTimeout(() => {
+                window.showScreen(window.pendingGameToLaunch + '-screen');
+            }, 50);
         } catch (err) {
             console.error('Error initializing game:', window.pendingGameToLaunch, err);
             window.updateStatus(window.pendingGameToLaunch + '-status', 'שגיאה בטעינת המשחק', true);
