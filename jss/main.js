@@ -1,7 +1,8 @@
 window.currentGameMode = 'ai'; 
 window.pendingGameToLaunch = '';
+window.pendingGameDisplayName = '';
 
-// טעינת צלילים
+// צלילים
 const sndMove = new Audio('https://cdn.jsdelivr.net/gh/lichess-org/lila@master/public/sound/standard/Move.mp3');
 const sndCapture = new Audio('https://cdn.jsdelivr.net/gh/lichess-org/lila@master/public/sound/standard/Capture.mp3');
 
@@ -9,9 +10,20 @@ window.playWoodSound = function(cap) {
     try { if (cap) sndCapture.play(); else sndMove.play(); } catch(e) {} 
 }
 
-// ניהול מודלים (Modals)
-window.openModeModal = function(gameName) { 
-    window.pendingGameToLaunch = gameName; 
+// ניהול מסכים
+window.showScreen = function(screenId) {
+    document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+    document.getElementById('menu-screen').style.display = 'none';
+    const target = document.getElementById(screenId);
+    if(target) target.style.display = 'block';
+    if(screenId === 'menu-screen') target.style.display = 'block';
+};
+
+// פתיחת מודל בחירת מצב
+window.openModeModal = function(gameKey, displayName) { 
+    window.pendingGameToLaunch = gameKey; 
+    window.pendingGameDisplayName = displayName;
+    document.getElementById('mode-modal-title').innerText = displayName;
     document.getElementById('mode-modal-overlay').style.display = 'flex'; 
 };
 
@@ -19,21 +31,25 @@ window.closeModeModal = function() {
     document.getElementById('mode-modal-overlay').style.display = 'none'; 
 };
 
-// הפעלת המשחק
+// מעבר ללובי האונליין
+window.showOnlineLobby = function() {
+    window.closeModeModal();
+    document.getElementById('lobby-game-name').innerText = "משחק רשת: " + window.pendingGameDisplayName;
+    // איפוס תצוגת חדר קודמת אם היתה
+    document.getElementById('active-room-info').style.display = 'none';
+    document.getElementById('create-room-btn').style.display = 'inline-block';
+    window.showScreen('online-lobby-screen');
+};
+
+// הפעלת המשחק בפועל
 window.launchGame = function(mode) {
     window.currentGameMode = mode;
     window.closeModeModal();
     
-    // הסתרת כל המסכים והתפריט
-    document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
-    document.getElementById('menu-screen').style.display = 'none';
+    window.showScreen(window.pendingGameToLaunch + '-screen');
     
-    // הצגת המסך הנבחר
-    const target = window.pendingGameToLaunch + '-screen';
-    if(document.getElementById(target)) document.getElementById(target).style.display = 'block';
-    
-    // אתחול לוגיקת המשחק הספציפית
     if (window.pendingGameToLaunch === 'chess') initChess();
+    // כאן יבואו איניציאליזציות של משחקים נוספים
 };
 
 window.closeEndgameOverlay = function() {

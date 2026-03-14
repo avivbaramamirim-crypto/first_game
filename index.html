@@ -5,25 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מרכז משחקי עץ - Multiplayer Online</title>
     
-    <!-- ספריות חיצוניות לשחמט ו-JQuery -->
+    <!-- ספריות חיצוניות -->
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
-    <!-- חיבור לקובץ העיצוב בתיקיית css -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- מודל בחירת מצב משחק (מול המחשב או חבר מקומי) -->
+    <!-- 1. מודל בחירת מצב משחק (מוצג אחרי לחיצה על משחק) -->
     <div id="mode-modal-overlay">
         <div class="modal-box">
-            <h3>איך תרצה לשחק?</h3>
+            <h3 id="mode-modal-title">שחמט</h3>
+            <p>איך תרצה לשחק?</p>
             <button class="mode-btn ai" onclick="window.launchGame('ai')">🤖 נגד המחשב</button>
-            <button class="mode-btn pvp" onclick="window.launchGame('pvp')">🧑‍🤝‍🧑 נגד חבר (מקומי)</button>
+            <button class="mode-btn pvp" onclick="window.launchGame('pvp')">🧑‍🤝‍🧑 נגד חבר (על אותו מסך)</button>
+            <button class="mode-btn online-mode" onclick="window.showOnlineLobby()">🌐 נגד חבר מרחוק (Online)</button>
             <button class="mode-btn cancel" onclick="window.closeModeModal()">ביטול</button>
         </div>
+    </div>
+
+    <!-- 2. מסך לובי אונליין (מוצג רק אם בחרת Online) -->
+    <div id="online-lobby-screen" class="game-screen">
+        <h2 id="lobby-game-name">הגדרת משחק רשת</h2>
+        
+        <div class="lobby-card">
+            <div class="lobby-section">
+                <h3>אפשרות 1: יצירת חדר חדש</h3>
+                <p class="instruction">הקלק על הכפתור כדי לקבל קוד חדר ייחודי אותו תשלח לחבר.</p>
+                <button id="create-room-btn" class="action-btn create-btn" onclick="window.createOnlineRoom()">➕ צור חדר וקבל קוד</button>
+                
+                <div id="active-room-info" style="display: none; margin-top: 15px;">
+                    <p>הקוד שלך הוא: <strong id="display-room-id" class="room-code-tag"></strong></p>
+                    <p class="waiting-msg pulse">⏳ ממתין שהחבר יצטרף... המשחק יתחיל אוטומטית.</p>
+                </div>
+            </div>
+
+            <div class="separator">או</div>
+
+            <div class="lobby-section">
+                <h3>אפשרות 2: הצטרפות לחדר קיים</h3>
+                <p class="instruction">אם חבר כבר יצר חדר, הכנס את הקוד שהוא שלח לך כאן:</p>
+                <div class="join-input-group">
+                    <input type="text" id="room-input" placeholder="למשל: A1B2C3" maxlength="6">
+                    <button class="action-btn join-btn" onclick="window.joinOnlineRoom()">🔗 הצטרף למשחק</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="action-btn back-btn" onclick="window.showScreen('menu-screen')">חזור לתפריט הראשי</button>
     </div>
 
     <!-- מסך סיום משחק -->
@@ -36,49 +68,39 @@
     </div>
 
     <div class="container">
-        
-        <!-- תפריט ראשי -->
+        <!-- מסך תפריט ראשי -->
         <div id="menu-screen">
             <h1>מרכז משחקי עץ</h1>
+            <div id="connection-status" class="status-bar">מתחבר לענן...</div>
             
-            <!-- ממשק לובי מולטיפלייר (Online) -->
-            <div id="multiplayer-lobby" class="lobby-container">
-                <div id="connection-status">מתחבר לענן...</div>
-                <div id="setup-online-ui">
-                    <p style="font-weight: bold; margin-bottom: 10px;">שחק נגד חבר מרחוק:</p>
-                    <button class="action-btn create-btn" onclick="window.createOnlineRoom()">➕ צור חדר</button>
-                    <span style="margin: 0 10px;">או</span>
-                    <input type="text" id="room-input" placeholder="קוד">
-                    <button class="action-btn join-btn" onclick="window.joinOnlineRoom()">🔗 הצטרף</button>
-                </div>
-                <div id="active-room-ui" style="display: none;">
-                    <span>אתה בחדר: </span>
-                    <strong id="display-room-id"></strong>
-                    <p id="player-role-text" style="font-size: 0.8em; color: #666; margin-top: 5px;"></p>
-                </div>
-            </div>
-
             <div class="menu-grid">
-                <button class="menu-btn btn-chess" onclick="window.openModeModal('chess')">♟️ שחמט</button>
-                <button class="menu-btn btn-chk" onclick="window.openModeModal('checkers')">🔴 דמקה</button>
-                <button class="menu-btn btn-ttt" onclick="window.openModeModal('tictactoe')">❌ איקס עיגול</button>
-                <button class="menu-btn btn-snk" onclick="window.openModeModal('snakes')">🐍 סולמות ונחשים</button>
+                <button class="menu-btn btn-chess" onclick="window.openModeModal('chess', '♟️ שחמט')">♟️ שחמט</button>
+                <button class="menu-btn btn-chk" onclick="window.openModeModal('checkers', '🔴 דמקה')">🔴 דמקה</button>
+                <button class="menu-btn btn-ttt" onclick="window.openModeModal('tictactoe', '❌ איקס עיגול')">❌ איקס עיגול</button>
+                <button class="menu-btn btn-snk" onclick="window.openModeModal('snakes', '🐍 סולמות ונחשים')">🐍 סולמות ונחשים</button>
             </div>
         </div>
 
-        <!-- מסך שחמט -->
+        <!-- מסכי משחק -->
         <div id="chess-screen" class="game-screen">
-            <h2>שחמט אונליין</h2>
+            <h2 id="chess-header">שחמט</h2>
             <div id="chessBoard" class="game-board-container"></div>
             <div class="info-panel">
                 <p id="chess-status" class="status-text"></p>
-                <button class="action-btn back-btn" onclick="location.reload()">חזור לתפריט</button>
+                <button class="action-btn back-btn" onclick="location.reload()">סיום וחזרה לתפריט</button>
             </div>
         </div>
 
+        <div id="checkers-screen" class="game-screen">
+            <h2>דמקה</h2>
+            <div id="checkersBoard" class="game-board-container"></div>
+            <div class="info-panel">
+                <p id="chk-status" class="status-text"></p>
+                <button class="action-btn back-btn" onclick="location.reload()">סיום וחזרה לתפריט</button>
+            </div>
+        </div>
     </div>
 
-    <!-- סדר טעינת הסקריפטים: Multiplayer (Module) חייב להיות ראשון -->
     <script type="module" src="js/multiplayer.js"></script>
     <script src="js/main.js"></script>
     <script src="js/chess.js"></script>

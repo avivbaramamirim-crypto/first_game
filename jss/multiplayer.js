@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// הגדרות Firebase שלך
+// הגדרות ה-Firebase שלך
 const firebaseConfig = {
   apiKey: "AIzaSyDv_vkJBRSMzW0lUBirAAkWD1Lmk8B3Lao",
   authDomain: "first-game-e3fe2.firebaseapp.com",
@@ -21,7 +21,6 @@ let currentUser = null;
 let currentRoomId = null;
 let myRole = null; 
 
-// חיבור ראשוני לענן
 async function init() {
     try {
         await signInAnonymously(auth);
@@ -35,15 +34,13 @@ async function init() {
                 }
             }
         });
-    } catch (e) { console.error("Firebase Error:", e); }
+    } catch (e) { console.error("Firebase connection error", e); }
 }
 
-// יצירת חדר חדש
+// יצירת חדר
 window.createOnlineRoom = async function() {
-    if (!currentUser || !window.pendingGameToLaunch) {
-        alert("אנא בחר משחק בתפריט קודם!");
-        return;
-    }
+    if (!currentUser) return;
+    
     const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
     
@@ -59,14 +56,22 @@ window.createOnlineRoom = async function() {
 
     currentRoomId = roomId;
     myRole = 'w';
-    updateLobbyUI(roomId);
+    
+    // עדכון הממשק למצב המתנה
+    document.getElementById('create-room-btn').style.display = 'none';
+    document.getElementById('active-room-info').style.display = 'block';
+    document.getElementById('display-room-id').innerText = roomId;
+    
     listenToRoom(roomId);
 };
 
-// הצטרפות לחדר קיים
+// הצטרפות לחדר
 window.joinOnlineRoom = async function() {
     const roomId = document.getElementById('room-input').value.trim().toUpperCase();
-    if (!roomId) return;
+    if (!roomId) {
+        alert("אנא הכנס קוד חדר שקיבלת מהחבר");
+        return;
+    }
     
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
     const snap = await getDoc(roomRef);
@@ -81,32 +86,31 @@ window.joinOnlineRoom = async function() {
         }
         currentRoomId = roomId;
         window.pendingGameToLaunch = data.game;
-        updateLobbyUI(roomId);
         listenToRoom(roomId);
         window.launchGame('online');
-    } else { alert("חדר לא נמצא!"); }
+    } else {
+        alert("חדר לא נמצא! וודא שהקוד נכון.");
+    }
 };
 
-// האזנה לשינויים בחדר (סנכרון מהלכים)
 function listenToRoom(roomId) {
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
     onSnapshot(roomRef, (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
         
-        // עדכון הלוח המקומי אם המהלך בוצע על ידי היריב
+        // סנכרון מהלכים
         if (data.lastMoveBy && data.lastMoveBy !== currentUser.uid) {
             if (window.syncLocalGame) window.syncLocalGame(data.game, data.state);
         }
         
-        // התחלת המשחק כשהיריב מצטרף
+        // מעבר אוטומטי למשחק כשהיריב מתחבר
         if (data.status === 'active' && window.currentGameMode !== 'online') {
             window.launchGame('online');
         }
     });
 }
 
-// שליחת מהלך לענן
 window.broadcastMove = async function(newState) {
     if (!currentRoomId) return;
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
@@ -116,13 +120,6 @@ window.broadcastMove = async function(newState) {
         timestamp: Date.now()
     });
 };
-
-function updateLobbyUI(roomId) {
-    document.getElementById('display-room-id').innerText = roomId;
-    document.getElementById('setup-online-ui').style.display = 'none';
-    document.getElementById('active-room-ui').style.display = 'block';
-    document.getElementById('player-role-text').innerText = (myRole === 'w') ? "אתה שחקן 1 (לבן)" : "אתה שחקן 2 (שחור)";
-}
 
 window.getMyRole = () => myRole;
 init();
