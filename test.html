@@ -3,18 +3,49 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>QUnit Test Suite</title>
+  <title>QUnit Test Suite - Tic Tac Toe Regression Tests</title>
   <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.20.1.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
+  <div id="qunit-fixture">
+    <!-- Test fixtures -->
+    <div id="tttBoard" class="game-board-container"></div>
+    <div id="ttt-status" class="status-bar"></div>
+  </div>
+  
+  <!-- QUnit -->
   <script src="https://code.jquery.com/qunit/qunit-2.20.1.js"></script>
-
+  
+  <!-- Mock main.js functions for testing -->
+  <script>
+    window.updateStatus = function(id, message, showTurn) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = message;
+      }
+    };
+    
+    window.triggerEndgameAnim = function(result, message) {
+      console.log('Endgame:', result, message);
+    };
+    
+    window.currentGameMode = 'pvp';
+  </script>
+  
   <!-- Source files to be tested -->
   <script src="js/tictactoe.js"></script>
-
+  
   <!-- Test files -->
   <script src="tests/tictactoe.test.js"></script>
+  
+  <!-- Run tests -->
+  <script>
+    // Auto-start tests when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Starting Tic Tac Toe regression tests...');
+    });
+  </script>
 </body>
 </html>
