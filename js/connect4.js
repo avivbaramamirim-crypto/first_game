@@ -1,21 +1,79 @@
-// ==========================================
-// 4. ארבע בשורה
-// ==========================================
-let c4B=[], c4T='red', c4Act=false;
-function initConnect4() { c4B=Array(6).fill(0).map(()=>Array(7).fill(null)); c4T='red'; c4Act=true; $('#c4Board').empty(); for(let r=0;r<6;r++)for(let c=0;c<7;c++){ let d=$(`<div class="c4-cell" data-c="${c}"></div>`); d.click(()=>clkC4(c)); $('#c4Board').append(d); } $('#c4-status').text(currentGameMode==='pvp'?'תור שחקן 1 (אדום)':'תור שלך (אדום)'); }
-function clkC4(c) {
-    if(!c4Act)return; let r=5; while(r>=0&&c4B[r][c]!==null)r--; if(r<0)return;
-    c4B[r][c]=c4T; let p=$(`<div class="c4-piece ${c4T}"></div>`); $(`#c4Board .c4-cell[data-c='${c}']`).eq(r).append(p); setTimeout(()=>p.addClass('dropped'),50); playWoodSound(false);
-    if(chkC4Win(r,c,c4T)){ c4Act=false; setTimeout(()=>triggerEndgameAnim(c4T==='red'?'win':(currentGameMode==='pvp'?'win':'lose'), c4T==='red'?'אדום ניצח!':'צהוב ניצח!'), 600); return; }
-    if(c4B[0].every(x=>x!==null)){ c4Act=false; setTimeout(()=>triggerEndgameAnim('draw'),600); return; }
-    c4T=c4T==='red'?'yellow':'red';
-    if(currentGameMode==='ai'&&c4T==='yellow'){ $('#c4-status').text('מחשב חושב...'); c4Act=false; setTimeout(aiC4, 600); } else { $('#c4-status').text(c4T==='red'?'תור שחקן 1 (אדום)':'תור שחקן 2 (צהוב)'); }
+/**
+ * ארבע בשורה - חוקי נפילה וניצחון ב-4 כיוונים
+ */
+let c4B = [], c4T = 'red', c4Act = true;
+
+function initConnect4() {
+    c4B = Array(6).fill(null).map(() => Array(7).fill(null));
+    c4T = 'red'; c4Act = true;
+    drawConnect4();
 }
-function chkC4Win(r,c,p) { let d=[[0,1],[1,0],[1,1],[1,-1]]; return d.some(dir=>{ let cnt=1; for(let i=1;i<4;i++){ let nr=r+dir[0]*i, nc=c+dir[1]*i; if(nr>=0&&nr<6&&nc>=0&&nc<7&&c4B[nr][nc]===p)cnt++; else break; } for(let i=1;i<4;i++){ let nr=r-dir[0]*i, nc=c-dir[1]*i; if(nr>=0&&nr<6&&nc>=0&&nc<7&&c4B[nr][nc]===p)cnt++; else break; } return cnt>=4; }); }
-function aiC4() {
-    let valid = []; for(let c=0;c<7;c++){ let r=5; while(r>=0&&c4B[r][c]!==null)r--; if(r>=0) valid.push({c:c, r:r}); }
-    if(valid.length===0) return;
-    for(let i=0; i<valid.length; i++) { c4B[valid[i].r][valid[i].c] = 'yellow'; if(chkC4Win(valid[i].r, valid[i].c, 'yellow')) { c4B[valid[i].r][valid[i].c] = null; c4Act=true; clkC4(valid[i].c); return; } c4B[valid[i].r][valid[i].c] = null; }
-    for(let i=0; i<valid.length; i++) { c4B[valid[i].r][valid[i].c] = 'red'; if(chkC4Win(valid[i].r, valid[i].c, 'red')) { c4B[valid[i].r][valid[i].c] = null; c4Act=true; clkC4(valid[i].c); return; } c4B[valid[i].r][valid[i].c] = null; }
-    c4Act=true; clkC4(valid[Math.floor(Math.random()*valid.length)].c);
+
+function drawConnect4() {
+    const board = document.getElementById('c4Board');
+    board.innerHTML = '';
+    for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 7; c++) {
+            const sq = document.createElement('div');
+            sq.className = 'c4-sq';
+            sq.style.width = '45px'; sq.style.height = '45px';
+            sq.style.borderRadius = '50%';
+            sq.style.margin = '2px';
+            sq.style.backgroundColor = c4B[r][c] === 'red' ? '#e74c3c' : (c4B[r][c] === 'yellow' ? '#f1c40f' : '#ecf0f1');
+            sq.onclick = () => handleC4Click(c);
+            board.appendChild(sq);
+        }
+    }
+    document.getElementById('c4-status').innerText = "תור: " + (c4T === 'red' ? 'אדום' : 'צהוב');
+}
+
+function handleC4Click(c) {
+    if (!c4Act) return;
+    if (window.currentGameMode === 'online') {
+        const myColor = window.getMyRole() === 'w' ? 'red' : 'yellow';
+        if (c4T !== myColor) return;
+    }
+
+    let r = -1;
+    for (let i = 5; i >= 0; i--) {
+        if (c4B[i][c] === null) { r = i; break; }
+    }
+    if (r === -1) return;
+
+    c4B[r][c] = c4T;
+    window.playWoodSound(false);
+    
+    if (checkC4Win(r, c)) {
+        drawConnect4();
+        c4Act = false;
+        triggerEndgameAnim('win', (c4T === 'red' ? 'האדום' : 'הצהוב') + " ניצח!");
+    } else {
+        c4T = c4T === 'red' ? 'yellow' : 'red';
+        drawConnect4();
+        if (window.currentGameMode === 'online') window.broadcastMove(JSON.stringify(c4B));
+        else if (window.currentGameMode === 'ai' && c4T === 'yellow') setTimeout(aiConnect4, 500);
+    }
+}
+
+function checkC4Win(r, c) {
+    const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+    for (let [dr, dc] of dirs) {
+        let count = 1;
+        for (let i=1; i<4; i++) {
+            let nr = r+dr*i, nc = c+dc*i;
+            if (nr>=0 && nr<6 && nc>=0 && nc<7 && c4B[nr][nc] === c4T) count++; else break;
+        }
+        for (let i=1; i<4; i++) {
+            let nr = r-dr*i, nc = c-dc*i;
+            if (nr>=0 && nr<6 && nc>=0 && nc<7 && c4B[nr][nc] === c4T) count++; else break;
+        }
+        if (count >= 4) return true;
+    }
+    return false;
+}
+
+function aiConnect4() {
+    const validCols = [];
+    for (let c=0; c<7; c++) if(c4B[0][c] === null) validCols.push(c);
+    if (validCols.length > 0) handleC4Click(validCols[Math.floor(Math.random() * validCols.length)]);
 }

@@ -1,21 +1,28 @@
+/**
+ * שחמט - שימוש בספריית Chess.js לחוקים מלאים
+ */
 var chessBoard = null;
 var chessGame = new Chess();
 
 function initChess() {
     if (chessBoard) chessBoard.destroy();
+    chessGame = new Chess();
     
+    let orientation = 'white';
+    if (window.currentGameMode === 'online' && window.getMyRole() === 'b') orientation = 'black';
+
     chessBoard = Chessboard('chessBoard', {
         draggable: true,
         position: 'start',
+        orientation: orientation,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
         onDragStart: (source, piece) => {
             if (chessGame.game_over()) return false;
-            
-            // חוקי תורות ומולטיפלייר (אי אפשר להזיז את כלי היריב)
+            // חסימת תורות
             if (window.currentGameMode === 'online') {
                 const myRole = window.getMyRole();
                 if (piece.charAt(0) !== myRole || chessGame.turn() !== myRole) return false;
-            } else if (window.currentGameMode === 'ai' && piece.search(/^b/) !== -1) {
+            } else if (window.currentGameMode === 'ai' && piece.charAt(0) === 'b') {
                 return false;
             }
         },
@@ -24,13 +31,9 @@ function initChess() {
             if (move === null) return 'snapback';
 
             window.playWoodSound(move.captured);
+            if (window.currentGameMode === 'online') window.broadcastMove(chessGame.fen());
+            else if (window.currentGameMode === 'ai') setTimeout(makeRandomChessMove, 400);
             
-            // עדכון הענן או המחשב
-            if (window.currentGameMode === 'online') {
-                window.broadcastMove(chessGame.fen());
-            } else if (window.currentGameMode === 'ai') {
-                setTimeout(makeRandomChessMove, 250);
-            }
             updateChessStatus();
         }
     });
@@ -38,8 +41,16 @@ function initChess() {
 }
 
 function updateChessStatus() {
-    const turn = chessGame.turn() === 'w' ? 'לבן' : 'שחור';
-    document.getElementById('chess-status').innerText = `תור ה${turn}`;
+    let status = "";
+    const moveColor = chessGame.turn() === 'b' ? 'שחור' : 'לבן';
+
+    if (chessGame.in_checkmate()) status = "מט! ה" + (chessGame.turn() === 'w' ? 'שחור' : 'לבן') + " ניצח.";
+    else if (chessGame.in_draw()) status = "תיקו!";
+    else {
+        status = "תור ה" + moveColor;
+        if (chessGame.in_check()) status += " (שח!)";
+    }
+    document.getElementById('chess-status').innerText = status;
 }
 
 function makeRandomChessMove() {
@@ -50,12 +61,10 @@ function makeRandomChessMove() {
     updateChessStatus();
 }
 
-// סנכרון מהלכים שמגיעים מהענן
 window.syncLocalGame = function(gameType, state) {
-    if (gameType === 'chess' && state !== chessGame.fen()) {
+    if (gameType === 'chess') {
         chessGame.load(state);
         chessBoard.position(state);
         updateChessStatus();
-        window.playWoodSound(false);
     }
 };

@@ -1,43 +1,122 @@
-// ==========================================
-//  2. דמקה
-// ==========================================
-let chkB=[], chkT='r', chkSel=null, chkVal=[], chkMJ=null;
-function initCheckersBoard() { chkB=Array(8).fill(0).map(()=>Array(8).fill(0)); for(let r=0;r<3;r++)for(let c=0;c<8;c++)if((r+c)%2!==0)chkB[r][c]={color:'b',isKing:false}; for(let r=5;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2!==0)chkB[r][c]={color:'r',isKing:false}; }
-function drawCheckers() {
-    let d=document.getElementById('checkersBoard'); d.innerHTML='';
-    for(let r=0;r<8;r++)for(let c=0;c<8;c++){
-        let isD=(r+c)%2!==0, sq=document.createElement('div'); sq.className=`chk-square ${isD?'chk-dark':'chk-light'}`;
-        if(chkVal.some(m=>m.toR===r&&m.toC===c)) sq.classList.add('highlight');
-        if(chkB[r][c]!==0) { let p=document.createElement('div'); p.className=`chk-piece ${chkB[r][c].color==='r'?'red':'black'} ${chkB[r][c].isKing?'king':''}`; if(chkSel&&chkSel.r===r&&chkSel.c===c) p.classList.add('selected'); sq.appendChild(p); }
-        if(isD) sq.addEventListener('click',()=>handleChk(r,c)); d.appendChild(sq);
+/**
+ * דמקה - חוקי תנועה, אכילה והפיכה למלכה
+ */
+let chkB = [], chkT = 'r', chkSel = null;
+
+function initCheckers() {
+    chkB = Array(8).fill(null).map(() => Array(8).fill(null));
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            if ((r + c) % 2 !== 0) {
+                if (r < 3) chkB[r][c] = { color: 'b', king: false };
+                else if (r > 4) chkB[r][c] = { color: 'r', king: false };
+            }
+        }
     }
-}
-function getCheckersMoves(playerColor, specificBoard = chkB) { let moves = []; for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(specificBoard[r][c]!==0&&specificBoard[r][c].color===playerColor) moves=moves.concat(getPM(r,c,specificBoard)); return moves; }
-function getPM(r,c,b) {
-    let p=b[r][c]; if(!p)return[]; let m=[]; const allDirs=[[-1,-1],[-1,1],[1,-1],[1,1]], fDirs=p.color==='r'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];
-    if(p.isKing){ allDirs.forEach(d=>{ let s=1, hj=false, jr=-1, jc=-1; while(true) { let tr=r+d[0]*s, tc=c+d[1]*s; if(tr<0||tr>7||tc<0||tc>7)break; if(b[tr][tc]===0){ if(!hj)m.push({fromR:r,fromC:c,toR:tr,toC:tc,isJump:false}); else m.push({fromR:r,fromC:c,toR:tr,toC:tc,isJump:true,jumpR:jr,jumpC:jc}); } else{ if(!hj&&b[tr][tc].color!==p.color){hj=true;jr=tr;jc=tc;} else break; } s++; } }); } 
-    else { fDirs.forEach(d=>{ let tr=r+d[0],tc=c+d[1]; if(tr>=0&&tr<=7&&tc>=0&&tc<=7&&b[tr][tc]===0) m.push({fromR:r,fromC:c,toR:tr,toC:tc,isJump:false}); }); allDirs.forEach(d=>{ let tr=r+d[0],tc=c+d[1],jr=r+d[0]*2,jc=c+d[1]*2; if(jr>=0&&jr<=7&&jc>=0&&jc<=7&&b[jr][jc]===0&&b[tr][tc]!==0&&b[tr][tc].color!==p.color) m.push({fromR:r,fromC:c,toR:jr,toC:jc,isJump:true,jumpR:tr,jumpC:tc}); }); } return m;
-}
-function handleChk(r,c) {
-    if(currentGameMode==='ai'&&chkT==='b') return; let p=chkB[r][c], clk=chkVal.find(m=>m.toR===r&&m.toC===c); if(clk) { execChk(clk); return; } if(chkMJ) return;
-    const allM = getCheckersMoves(chkT);
-    if(p!==0 && p.color===chkT) { const mForP = allM.filter(m=>m.fromR===r&&m.fromC===c); if(mForP.length>0) { playWoodSound(false); chkSel={r,c}; chkVal=mForP; } else { chkSel=null; chkVal=[]; } } else { chkSel=null; chkVal=[]; }
+    chkT = 'r'; chkSel = null;
     drawCheckers();
 }
-function execChk(m) {
-    let p=chkB[m.fromR][m.fromC]; chkB[m.toR][m.toC]=p; chkB[m.fromR][m.fromC]=0; if(m.isJump)chkB[m.jumpR][m.jumpC]=0; playWoodSound(m.isJump);
-    let k=false; if((p.color==='r'&&m.toR===0)||(p.color==='b'&&m.toR===7)){ if(!p.isKing)k=true; p.isKing=true; } chkSel=null; chkVal=[];
-    if(m.isJump && !k) { const fj = getPM(m.toR, m.toC, chkB).filter(x=>x.isJump); if(fj.length>0) { chkMJ={r:m.toR, c:m.toC}; if(currentGameMode==='ai'&&chkT==='b') { drawCheckers(); $('#chk-status').text('המחשב ממשיך לאכול...'); setTimeout(()=>execChk(fj[Math.floor(Math.random()*fj.length)]),600); return; } else { chkSel=chkMJ; chkVal=fj; drawCheckers(); $('#chk-status').html('<span class="status-highlight">אכילה כפולה! בחר יעד.</span>'); return; } } }
-    chkMJ=null; drawCheckers(); chkT=chkT==='r'?'b':'r';
-    if(getCheckersMoves(chkT).length===0) { if (currentGameMode==='pvp') { document.getElementById('chk-status').innerText='המשחק נגמר!'; triggerEndgameAnim('win','שחקן '+(chkT==='b'?'1 (אדום)':'2 (שחור)')+' ניצח!'); } else { document.getElementById('chk-status').innerText=chkT==='b'?'ניצחת!':'המחשב ניצח!'; setTimeout(()=>chkT==='b'?triggerEndgameAnim('win'):triggerEndgameAnim('lose'),500); } return; }
-    if(chkT==='b') { if(currentGameMode==='ai'){ $('#chk-status').text('מחשב חושב...'); setTimeout(aiChk,600); } else { $('#chk-status').text('תור שחור (שחקן 2) לזוז'); } } else { $('#chk-status').text(currentGameMode==='pvp'?'תור אדום (שחקן 1) לזוז':'תור אדום (שלך) לזוז'); }
+
+function drawCheckers() {
+    const board = document.getElementById('checkersBoard');
+    board.innerHTML = '';
+    const flipped = (window.currentGameMode === 'online' && window.getMyRole() === 'b');
+
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            let dr = flipped ? 7 - r : r;
+            let dc = flipped ? 7 - c : c;
+            
+            const sq = document.createElement('div');
+            sq.className = (dr + dc) % 2 === 0 ? 'chk-sq white' : 'chk-sq black';
+            sq.style.backgroundColor = (dr + dc) % 2 === 0 ? '#f0d9b5' : '#b58863';
+            sq.style.position = 'relative';
+            
+            if (chkSel && chkSel.r === dr && chkSel.c === dc) sq.style.outline = '3px solid yellow';
+
+            const piece = chkB[dr][dc];
+            if (piece) {
+                const p = document.createElement('div');
+                p.className = 'chk-piece ' + (piece.color === 'r' ? 'red' : 'black');
+                p.style.width = '80%'; p.style.height = '80%';
+                p.style.borderRadius = '50%';
+                p.style.margin = '10%';
+                p.style.backgroundColor = piece.color === 'r' ? '#e74c3c' : '#2c3e50';
+                p.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.5)';
+                if (piece.king) {
+                    p.innerHTML = '👑'; p.style.display = 'flex'; p.style.alignItems = 'center'; p.style.justifyContent = 'center'; p.style.color = 'gold';
+                }
+                sq.appendChild(p);
+            }
+            sq.onclick = () => handleChkClick(dr, dc);
+            board.appendChild(sq);
+        }
+    }
+    document.getElementById('chk-status').innerText = "תור ה" + (chkT === 'r' ? 'אדום' : 'שחור');
 }
-function aiChk() {
-    const mvs = getCheckersMoves('b'); if(!mvs.length) return; let bm=mvs[0], bs=-99999;
-    for(let i=0;i<mvs.length;i++) {
-        let m=mvs[i], tb=chkB.map(r=>r.map(c=>c?{...c}:0)); let p=tb[m.fromR][m.fromC]; tb[m.toR][m.toC]=p; tb[m.fromR][m.fromC]=0; if(m.isJump)tb[m.jumpR][m.jumpC]=0; if(m.toR===7)p.isKing=true;
-        let s=0; for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(tb[r][c]!==0){ let v=tb[r][c].isKing?5:1; if(!tb[r][c].isKing&&tb[r][c].color==='b')v+=r*0.1; if(tb[r][c].color==='b')s+=v;else s-=v; }
-        if(m.isJump)s+=3; if(getCheckersMoves('r',tb).some(pr=>pr.isJump))s-=4; if(s>bs){bs=s;bm=m;}
-    } execChk(bm);
+
+function handleChkClick(r, c) {
+    if (window.currentGameMode === 'online') {
+        const myColor = window.getMyRole() === 'w' ? 'r' : 'b';
+        if (chkT !== myColor) return;
+    }
+
+    const p = chkB[r][c];
+    if (p && p.color === chkT) {
+        chkSel = { r, c };
+        drawCheckers();
+    } else if (chkSel) {
+        moveCheckers(chkSel.r, chkSel.c, r, c);
+    }
 }
-function initCheckers() { initCheckersBoard(); chkT='r'; chkSel=null; chkVal=[]; chkMJ=null; $('#chk-status').text(currentGameMode==='pvp'?'תור אדום (שחקן 1)':'תור אדום (שלך) לזוז'); drawCheckers(); }
+
+function moveCheckers(fr, fc, tr, tc) {
+    const p = chkB[fr][fc];
+    const distR = tr - fr;
+    const distC = Math.abs(tc - fc);
+    const dir = p.color === 'r' ? -1 : 1;
+
+    // חוקי תנועה בסיסיים (פשוט)
+    if (distC === 1 && (p.king || distR === dir) && chkB[tr][tc] === null) {
+        chkB[tr][tc] = p; chkB[fr][fc] = null;
+        completeMove(tr, tc, p);
+    } 
+    // אכילה
+    else if (distC === 2 && Math.abs(distR) === 2) {
+        const mr = fr + (tr - fr) / 2;
+        const mc = fc + (tc - fc) / 2;
+        if (chkB[mr][mc] && chkB[mr][mc].color !== p.color && chkB[tr][tc] === null) {
+            chkB[tr][tc] = p; chkB[fr][fc] = null; chkB[mr][mc] = null;
+            window.playWoodSound(true);
+            completeMove(tr, tc, p);
+        }
+    }
+}
+
+function completeMove(r, c, p) {
+    if ((p.color === 'r' && r === 0) || (p.color === 'b' && r === 7)) p.king = true;
+    chkSel = null;
+    chkT = chkT === 'r' ? 'b' : 'r';
+    drawCheckers();
+    if (window.currentGameMode === 'online') window.broadcastMove(JSON.stringify(chkB));
+    else if (window.currentGameMode === 'ai' && chkT === 'b') setTimeout(aiCheckers, 500);
+}
+
+function aiCheckers() {
+    // לוגיקת מחשב בסיסית - מחפש מהלך חוקי ראשון
+    for(let r=0; r<8; r++) {
+        for(let c=0; c<8; c++) {
+            if(chkB[r][c] && chkB[r][c].color === 'b') {
+                // ניסיון לזוז
+                const moves = [[1,1], [1,-1], [2,2], [2,-2]];
+                for(let m of moves) {
+                    let tr = r + m[0], tc = c + m[1];
+                    if(tr>=0 && tr<8 && tc>=0 && tc<8) {
+                        moveCheckers(r, c, tr, tc);
+                        if(chkT === 'r') return; // המהלך הצליח
+                    }
+                }
+            }
+        }
+    }
+}

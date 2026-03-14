@@ -110,8 +110,11 @@ function listenToRoom(roomId) {
 window.broadcastMove = async function(newState) {
     if (!currentRoomId) return;
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomId);
+    
+    const stateStr = (typeof newState === 'string') ? newState : JSON.stringify(newState);
+    
     await updateDoc(roomRef, {
-        state: newState,
+        state: stateStr,
         lastMoveBy: currentUser.uid,
         timestamp: Date.now()
     });
