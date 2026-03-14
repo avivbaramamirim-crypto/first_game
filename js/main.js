@@ -73,3 +73,9 @@ window.triggerEndgameAnim = function(type, text) {
     document.getElementById('endgame-icon').innerText = type === 'win' ? "🏆" : "🤝";
     overlay.style.display = 'flex';
 };
+
+// Initialize the menu screen when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    window.showMenuScreen();
+    console.log('Game center initialized');
+});

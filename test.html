@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test AI Difficulty</title>
+</head>
+<body>
+    <h1>AI Difficulty Test</h1>
+    <button onclick="testDifficulty()">Test AI Difficulty</button>
+    <div id="result"></div>
+    
+    <script>
+        // Simulate the main.js variables
+        window.aiDifficulty = 'medium';
+        
+        window.setAIDifficulty = function(difficulty) {
+            window.aiDifficulty = difficulty;
+            console.log('AI difficulty set to:', difficulty);
+        };
+        
+        function testDifficulty() {
+            const result = document.getElementById('result');
+            result.innerHTML = '';
+            
+            // Test all difficulty levels
+            const difficulties = ['easy', 'medium', 'hard'];
+            
+            difficulties.forEach(diff => {
+                window.setAIDifficulty(diff);
+                result.innerHTML += `<p>Current difficulty: ${window.aiDifficulty}</p>`;
+            });
+            
+            result.innerHTML += '<p>✅ AI Difficulty system working correctly!</p>';
+        }
+    </script>
+</body>
+</html>

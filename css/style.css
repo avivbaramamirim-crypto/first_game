@@ -1,6 +1,320 @@
 
+/* CSS Variables */
+:root {
+    --primary-wood: #8B4513;
+    --dark-wood: #654321;
+    --light-wood: #D2691E;
+    --accent: #FFD700;
+    --success: #4CAF50;
+    --warning: #FF9800;
+    --error: #F44336;
+    --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background);
+    min-height: 100vh;
+    direction: rtl;
+    text-align: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Menu Screen */
+#menu-screen {
+    display: block;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+#menu-screen h1 {
+    font-size: 3rem;
+    color: var(--dark-wood);
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.menu-btn {
+    background: linear-gradient(145deg, var(--light-wood), var(--primary-wood));
+    color: white;
+    border: none;
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 80px;
+}
+
+.menu-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    background: linear-gradient(145deg, var(--primary-wood), var(--dark-wood));
+}
+
+.menu-btn .icon {
+    font-size: 1.5rem;
+}
+
+/* Modal Styles */
+#mode-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-box h2 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.mode-btn {
+    width: 100%;
+    padding: 15px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Game Screens */
+.game-screen {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.game-screen h2 {
+    color: var(--dark-wood);
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.game-board-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    max-width: 600px;
+    min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-panel {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 20px auto 0;
+    gap: 20px;
+}
+
+.status-bar {
+    background: var(--light-wood);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    flex: 1;
+}
+
+.action-btn {
+    background: var(--primary-wood);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background: var(--dark-wood);
+    transform: scale(1.05);
+}
+
+.back-btn {
+    background: #666;
+}
+
+.back-btn:hover {
+    background: #333;
+}
+
+/* Online Lobby */
+#online-lobby-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.lobby-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 500px;
+    margin: 20px auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.online-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.online-actions input {
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+    width: 150px;
+}
+
+.online-actions button {
+    padding: 12px 20px;
+}
+
+/* Endgame Overlay */
+#endgame-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* Connection Status */
+#connection-status {
+    background: var(--accent);
+    color: var(--dark-wood);
+    padding: 10px 20px;
+    border-radius: 25px;
+    display: inline-block;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Pulse Animation */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Active Status */
+.status-bar.active {
+    background: var(--success);
+    animation: pulse 1s infinite;
+}
+
+/* Chess Board Highlight */
 .highlight-white {
-  -webkit-box-shadow: inset 0 0 3px 3px yellow;
-  -moz-box-shadow: inset 0 0 3px 3px yellow;
-  box-shadow: inset 0 0 3px 3px yellow;
+    -webkit-box-shadow: inset 0 0 3px 3px yellow;
+    -moz-box-shadow: inset 0 0 3px 3px yellow;
+    box-shadow: inset 0 0 3px 3px yellow;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    #menu-screen h1 {
+        font-size: 2rem;
+    }
+    
+    .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .menu-btn {
+        padding: 15px;
+        font-size: 1rem;
+        min-height: 70px;
+    }
+    
+    .game-board-container {
+        padding: 10px;
+        min-height: 300px;
+    }
+    
+    .info-panel {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-box {
+        padding: 20px;
+        margin: 20px;
+    }
 }
