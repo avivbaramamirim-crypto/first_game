@@ -7,7 +7,9 @@ window.initChess = function() {
     let orient = (window.currentGameMode === 'online' && window.getMyRole() === 'b') ? 'black' : 'white';
 
     chessBoard = Chessboard('chessBoard', {
-        draggable: true, position: 'start', orientation: orient,
+        draggable: true, 
+        position: 'start', 
+        orientation: orient,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
         onDragStart: (s, p) => {
             if (chessGame.game_over()) return false;
@@ -15,9 +17,22 @@ window.initChess = function() {
         },
         onDrop: (s, t) => {
             const move = chessGame.move({ from: s, to: t, promotion: 'q' });
-            if (move === null) return 'snapback';
+            if (move === null) {
+                return 'snapback';
+            }
+            // Clear any highlights and update position
+            chessBoard.position(chessGame.fen());
+            chessBoard.clearHighlights();
             if (window.currentGameMode === 'ai') setTimeout(makeRandomMove, 500);
             updateStatus();
+        },
+        onMouseoutSquare: (square, piece) => {
+            // Clear highlights when mouse leaves square
+            chessBoard.clearHighlights();
+        },
+        onSnapbackEnd: () => {
+            // Clear highlights after snapback
+            chessBoard.clearHighlights();
         }
     });
     updateStatus();
@@ -33,6 +48,15 @@ function makeRandomMove() {
     if (moves.length > 0) {
         chessGame.move(moves[Math.floor(Math.random() * moves.length)]);
         chessBoard.position(chessGame.fen());
+        // Clear any remaining highlights
+        chessBoard.clearHighlights();
         updateStatus();
     }
 }
+
+// Add a function to clear board highlights
+window.clearChessHighlights = function() {
+    if (chessBoard) {
+        chessBoard.clearHighlights();
+    }
+};

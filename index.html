@@ -45,7 +45,7 @@
                 <button class="action-btn" onclick="window.joinOnlineRoom()" style="background:#1565c0">🔗 הצטרף</button>
             </div>
         </div>
-        <button class="action-btn back-btn" onclick="window.location.reload()">חזור לתפריט</button>
+        <button class="action-btn back-btn" onclick="window.showMenuScreen()">חזור לתפריט</button>
     </div>
 
     <!-- הודעת סיום -->
@@ -53,7 +53,7 @@
         <div class="modal-box">
             <h2 id="endgame-title">סיום!</h2>
             <div id="endgame-icon" style="font-size:4rem">🏆</div>
-            <button class="action-btn" onclick="window.location.reload()" style="margin-top:20px; width:100%">חזור לתפריט הראשי</button>
+            <button class="action-btn" onclick="window.showMenuScreen()" style="margin-top:20px; width:100%">חזור לתפריט הראשי</button>
         </div>
     </div>
 
@@ -89,39 +89,39 @@
         <div id="chess-screen" class="game-screen">
             <h2>שחמט</h2>
             <div id="chessBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="chess-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+            <div class="info-panel"><div id="chess-status" class="status-bar"></div><button class="action-btn back-btn" onclick="window.showMenuScreen()">סיום</button></div>
         </div>
 
         <div id="checkers-screen" class="game-screen">
             <h2>דמקה</h2>
             <div id="checkersBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="chk-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+            <div class="info-panel"><div id="chk-status" class="status-bar"></div><button class="action-btn back-btn" onclick="window.showMenuScreen()">סיום</button></div>
         </div>
 
         <div id="connect4-screen" class="game-screen">
             <h2>4 בשורה</h2>
             <div id="c4Board" class="game-board-container" style="height:450px"></div>
-            <div class="info-panel"><div id="c4-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+            <div class="info-panel"><div id="c4-status" class="status-bar"></div><button class="action-btn back-btn" onclick="window.showMenuScreen()">סיום</button></div>
         </div>
 
         <div id="memory-screen" class="game-screen">
             <h2>משחק זיכרון</h2>
             <div id="mem-score-box" style="font-size:1.2rem; font-weight:bold; margin-bottom:10px"></div>
             <div id="memoryBoard" class="game-board-container" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; padding:10px"></div>
-            <div class="info-panel"><div id="mem-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+            <div class="info-panel"><div id="mem-status" class="status-bar"></div><button class="action-btn back-btn" onclick="window.showMenuScreen()">סיום</button></div>
         </div>
 
         <div id="snakes-screen" class="game-screen">
             <h2>סולמות ונחשים</h2>
             <button id="snk-dice-btn" class="action-btn" onclick="window.rollSnakesDice()" style="margin-bottom:15px; font-size:1.5rem">🎲 הטל קובייה</button>
             <div id="snakesBoard" class="game-board-container"></div>
-            <div class="info-panel"><div id="snk-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+            <div class="info-panel"><div id="snk-status" class="status-bar"></div><button class="action-btn back-btn" onclick="window.showMenuScreen()">סיום</button></div>
         </div>
 
         <div id="tictactoe-screen" class="game-screen">
             <h2>איקס עיגול</h2>
             <div id="tttBoard" class="game-board-container" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; background:var(--dark-wood); padding:10px"></div>
-            <div class="info-panel"><div id="ttt-status" class="status-bar"></div><button class="action-btn back-btn" onclick="location.reload()">סיום</button></div>
+            <div class="info-panel"><div id="ttt-status" class="status-bar"></div><button class="action-btn back-btn" onclick="window.showMenuScreen()">סיום</button></div>
         </div>
     </div>
 

@@ -4,8 +4,16 @@ window.pendingGameToLaunch = '';
 window.showScreen = function(screenId) {
     document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
     document.getElementById('menu-screen').style.display = 'none';
+    document.getElementById('online-lobby-screen').style.display = 'none';
     const target = document.getElementById(screenId);
     if (target) target.style.display = 'block';
+};
+
+window.showMenuScreen = function() {
+    document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+    document.getElementById('online-lobby-screen').style.display = 'none';
+    document.getElementById('mode-modal-overlay').style.display = 'none';
+    document.getElementById('menu-screen').style.display = 'block';
 };
 
 window.openModeModal = function(gameKey, displayName) { 
@@ -16,6 +24,11 @@ window.openModeModal = function(gameKey, displayName) {
 
 window.closeModeModal = function() { 
     document.getElementById('mode-modal-overlay').style.display = 'none'; 
+};
+
+window.showOnlineLobby = function() {
+    window.closeModeModal();
+    document.getElementById('online-lobby-screen').style.display = 'block';
 };
 
 window.launchGame = function(mode) {
