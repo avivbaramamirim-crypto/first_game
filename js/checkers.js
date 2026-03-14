@@ -22,6 +22,8 @@ function drawCheckers() {
     board.style.width = '400px';
     board.style.height = '400px';
     board.style.margin = '0 auto';
+    board.style.border = '2px solid #8b4513';
+    board.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
     
     const flipped = (window.currentGameMode === 'online' && window.getMyRole && window.getMyRole() === 'b');
 
@@ -31,25 +33,31 @@ function drawCheckers() {
             let dc = flipped ? 7 - c : c;
             const sq = document.createElement('div');
             sq.style.backgroundColor = (dr + dc) % 2 === 0 ? '#f0d9b5' : '#b58863';
-            sq.style.display = 'flex'; sq.style.justifyContent = 'center'; sq.style.alignItems = 'center';
+            sq.style.display = 'flex'; 
+            sq.style.justifyContent = 'center'; 
+            sq.style.alignItems = 'center';
             sq.style.cursor = 'pointer';
             sq.style.borderRadius = '4px';
+            sq.style.position = 'relative';
             if (chkS && chkS.r === dr && chkS.c === dc) sq.style.boxShadow = 'inset 0 0 10px yellow';
 
             const p = chkB[dr][dc];
             if (p) {
-                const div = document.createElement('div');
-                div.style.width = '70%';
-                div.style.height = '70%';
-                div.style.borderRadius = '50%';
-                div.style.backgroundColor = p.color === 'r' ? '#e74c3c' : '#2c3e50';
-                div.style.border = '3px solid ' + (p.color === 'r' ? '#c0392b' : '#1a252f');
-                div.style.display = 'flex';
-                div.style.justifyContent = 'center';
-                div.style.alignItems = 'center';
-                div.style.fontSize = '1.2rem';
-                if (p.king) div.innerHTML = '♔';
-                sq.appendChild(div);
+                const piece = document.createElement('div');
+                piece.style.width = '70%';
+                piece.style.height = '70%';
+                piece.style.borderRadius = '50%';
+                piece.style.backgroundColor = p.color === 'r' ? '#e74c3c' : '#2c3e50';
+                piece.style.border = '3px solid ' + (p.color === 'r' ? '#c0392b' : '#1a252f');
+                piece.style.display = 'flex';
+                piece.style.justifyContent = 'center';
+                piece.style.alignItems = 'center';
+                piece.style.fontSize = '1.2rem';
+                piece.style.color = 'white';
+                piece.style.fontWeight = 'bold';
+                piece.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+                if (p.king) piece.innerHTML = '';
+                sq.appendChild(piece);
             }
             sq.onclick = () => handleChk(dr, dc);
             board.appendChild(sq);

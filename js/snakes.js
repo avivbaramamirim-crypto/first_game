@@ -21,8 +21,13 @@ function drawSnakes() {
 }
 
 window.rollSnakesDice = function() {
-    if (sT !== 0) return;
+    console.log('Dice rolled! Current turn:', sT, 'Mode:', window.currentGameMode);
+    if (sT !== 0) {
+        console.log('Not your turn!');
+        return;
+    }
     const r = Math.floor(Math.random() * 6) + 1;
+    console.log('Rolled:', r);
     movePlayer(0, r);
 };
 

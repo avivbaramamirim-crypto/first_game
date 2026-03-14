@@ -140,5 +140,13 @@
     <script src="js/tictactoe.js"></script>
     <script src="js/snakes.js"></script>
     <script src="js/memory.js"></script>
+    <script>
+        // Show menu screen when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.showMenuScreen) {
+                window.showMenuScreen();
+            }
+        });
+    </script>
 </body>
 </html>

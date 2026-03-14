@@ -13,16 +13,57 @@ window.initMemory = function() {
 function drawMem() {
     const b = document.getElementById('memoryBoard');
     b.innerHTML = '';
-    b.style.display = 'grid'; b.style.gridTemplateColumns = 'repeat(4, 1fr)'; b.style.gap = '10px'; b.style.padding = '10px';
+    b.style.display = 'grid'; 
+    b.style.gridTemplateColumns = 'repeat(4, 1fr)'; 
+    b.style.gap = '15px'; 
+    b.style.padding = '20px';
+    b.style.background = '#2c3e50';
+    b.style.borderRadius = '15px';
+    b.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+    b.style.width = '400px';
+    b.style.margin = '0 auto';
 
     mCards.forEach((c, i) => {
         const card = document.createElement('div');
         card.style.aspectRatio = '1/1';
-        card.style.background = c.match ? '#a5d6a7' : (c.open ? 'white' : 'var(--primary-wood)');
-        card.style.border = '4px solid var(--dark-wood)';
-        card.style.borderRadius = '10px';
-        card.style.display = 'flex'; card.style.alignItems = 'center'; card.style.justifyContent = 'center';
-        card.style.fontSize = '2.5rem'; card.style.cursor = 'pointer';
+        card.style.borderRadius = '12px';
+        card.style.display = 'flex'; 
+        card.style.alignItems = 'center'; 
+        card.style.justifyContent = 'center';
+        card.style.fontSize = '2.5rem'; 
+        card.style.cursor = 'pointer';
+        card.style.transition = 'all 0.3s ease';
+        card.style.border = '3px solid #34495e';
+        
+        if (c.match) {
+            card.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            card.style.color = 'white';
+            card.style.boxShadow = '0 2px 8px rgba(46, 204, 113, 0.4)';
+            card.style.transform = 'scale(0.95)';
+        } else if (c.open) {
+            card.style.background = 'linear-gradient(135deg, #ecf0f1, #bdc3c7)';
+            card.style.color = '#2c3e50';
+            card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+            card.style.transform = 'scale(1.02)';
+        } else {
+            card.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            card.style.color = 'transparent';
+            card.style.boxShadow = '0 2px 8px rgba(52, 152, 219, 0.3)';
+        }
+        
+        card.onmouseover = () => {
+            if (!c.match && !c.open && !mLock) {
+                card.style.transform = 'scale(1.05)';
+                card.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.5)';
+            }
+        };
+        card.onmouseout = () => {
+            if (!c.match && !c.open) {
+                card.style.transform = c.match ? 'scale(0.95)' : 'scale(1)';
+                card.style.boxShadow = c.match ? '0 2px 8px rgba(46, 204, 113, 0.4)' : '0 2px 8px rgba(52, 152, 219, 0.3)';
+            }
+        };
+        
         card.innerText = (c.open || c.match) ? c.a : '';
         card.onclick = () => handleMemClick(i);
         b.appendChild(card);

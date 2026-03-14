@@ -1,36 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test AI Difficulty</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>QUnit Test Suite</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.20.1.css">
 </head>
 <body>
-    <h1>AI Difficulty Test</h1>
-    <button onclick="testDifficulty()">Test AI Difficulty</button>
-    <div id="result"></div>
-    
-    <script>
-        // Simulate the main.js variables
-        window.aiDifficulty = 'medium';
-        
-        window.setAIDifficulty = function(difficulty) {
-            window.aiDifficulty = difficulty;
-            console.log('AI difficulty set to:', difficulty);
-        };
-        
-        function testDifficulty() {
-            const result = document.getElementById('result');
-            result.innerHTML = '';
-            
-            // Test all difficulty levels
-            const difficulties = ['easy', 'medium', 'hard'];
-            
-            difficulties.forEach(diff => {
-                window.setAIDifficulty(diff);
-                result.innerHTML += `<p>Current difficulty: ${window.aiDifficulty}</p>`;
-            });
-            
-            result.innerHTML += '<p>✅ AI Difficulty system working correctly!</p>';
-        }
-    </script>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="https://code.jquery.com/qunit/qunit-2.20.1.js"></script>
+
+  <!-- Source files to be tested -->
+  <script src="js/tictactoe.js"></script>
+
+  <!-- Test files -->
+  <script src="tests/tictactoe.test.js"></script>
 </body>
 </html>

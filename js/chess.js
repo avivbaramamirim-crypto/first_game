@@ -26,7 +26,7 @@ window.initChess = function() {
                 highlightSquare(t);
                 updateStatus();
             }, 50);
-            if (window.currentGameMode === 'ai') setTimeout(makeRandomMove, 600);
+            if (window.currentGameMode === 'ai' && chessGame.turn() === 'b') setTimeout(makeRandomMove, 600);
         }
     });
     updateStatus();

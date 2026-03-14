@@ -9,15 +9,43 @@ window.initConnect4 = function() {
 function drawC4() {
     const board = document.getElementById('c4Board');
     board.innerHTML = '';
-    board.style.display = 'grid'; board.style.gridTemplateColumns = 'repeat(7, 1fr)';
-    board.style.background = 'var(--dark-wood)'; board.style.padding = '10px';
+    board.style.display = 'grid'; 
+    board.style.gridTemplateColumns = 'repeat(7, 1fr)';
+    board.style.gap = '8px';
+    board.style.background = '#1e3a8a'; 
+    board.style.padding = '15px';
+    board.style.borderRadius = '10px';
+    board.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+    board.style.width = '420px';
+    board.style.margin = '0 auto';
 
     for (let r = 0; r < 6; r++) {
         for (let c = 0; c < 7; c++) {
             const cell = document.createElement('div');
-            cell.style.aspectRatio = '1/1'; cell.style.borderRadius = '50%'; cell.style.margin = '4px';
-            cell.style.background = c4B[r][c] === 'red' ? '#e53935' : (c4B[r][c] === 'yellow' ? '#fdd835' : '#263238');
-            cell.style.boxShadow = 'inset 0 4px 6px rgba(0,0,0,0.5)';
+            cell.style.aspectRatio = '1/1'; 
+            cell.style.borderRadius = '50%'; 
+            cell.style.border = '3px solid #1e293b';
+            cell.style.cursor = 'pointer';
+            cell.style.transition = 'all 0.3s ease';
+            
+            if (c4B[r][c] === 'red') {
+                cell.style.background = 'radial-gradient(circle at 30% 30%, #ef4444, #dc2626)';
+                cell.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)';
+            } else if (c4B[r][c] === 'yellow') {
+                cell.style.background = 'radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b)';
+                cell.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.2)';
+            } else {
+                cell.style.background = 'radial-gradient(circle at 30% 30%, #475569, #334155)';
+                cell.style.boxShadow = 'inset 0 4px 6px rgba(0,0,0,0.5)';
+            }
+            
+            cell.onmouseover = () => {
+                if (!c4B[r][c]) cell.style.transform = 'scale(1.05)';
+            };
+            cell.onmouseout = () => {
+                if (!c4B[r][c]) cell.style.transform = 'scale(1)';
+            };
+            
             cell.onclick = () => handleC4(c);
             board.appendChild(cell);
         }
