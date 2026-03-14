@@ -62,10 +62,19 @@ function drawC4() {
 }
 
 function handleC4(c) {
-    if (!c4Act || (c4T === 'yellow' && window.currentGameMode === 'ai')) return;
+    console.log('Connect4 - Column clicked:', c, 'Current turn:', c4T, 'Mode:', window.currentGameMode, 'Active:', c4Act);
+    
+    if (!c4Act || (c4T === 'yellow' && window.currentGameMode === 'ai')) {
+        console.log('Move blocked - Not active or AI turn');
+        return;
+    }
+    
     let r = -1;
     for (let i = 5; i >= 0; i--) if (!c4B[i][c]) { r = i; break; }
-    if (r === -1) return;
+    if (r === -1) {
+        console.log('Column is full');
+        return;
+    }
 
     c4B[r][c] = c4T;
     if (checkC4Win(r, c)) {
@@ -90,6 +99,8 @@ function checkC4Win(r, c) {
 }
 
 function aiC4() {
+    console.log('Connect4 AI called, current turn:', c4T, 'mode:', window.currentGameMode);
+    
     // Simple AI for now - can be enhanced later
     const availableCols = [];
     for (let c = 0; c < 7; c++) {
@@ -97,6 +108,8 @@ function aiC4() {
         for (let i = 5; i >= 0; i--) if (!c4B[i][c]) { r = i; break; }
         if (r !== -1) availableCols.push(c);
     }
+    
+    console.log('Available columns for AI:', availableCols);
     
     if (availableCols.length > 0) {
         // Try center columns first

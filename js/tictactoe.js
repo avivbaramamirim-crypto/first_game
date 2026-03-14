@@ -50,8 +50,16 @@ function checkTTTWin() {
 
 
 function drawTTT() {
+    console.log('Drawing TicTacToe board...');
+    
     const b = document.getElementById('tttBoard');
-    if (!b) return;
+    if (!b) {
+        console.error('TicTacToe board element not found in drawTTT');
+        return;
+    }
+    
+    console.log('Board element found, clearing and setting styles...');
+    
     b.innerHTML = '';
     b.style.display = 'grid';
     b.style.gridTemplateColumns = 'repeat(3, 1fr)';
@@ -65,7 +73,11 @@ function drawTTT() {
     b.style.borderRadius = '10px';
     b.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
     
+    console.log('Creating', tttB.length, 'squares...');
+    
     tttB.forEach((v, i) => {
+        console.log(`Creating square ${i} with value:`, v);
+        
         const sq = document.createElement('div');
         sq.style.backgroundColor = '#f5f5dc';
         sq.style.display = 'flex'; 
@@ -102,6 +114,8 @@ function drawTTT() {
         sq.onclick = () => handleTTT(i);
         b.appendChild(sq);
     });
+    
+    console.log('TicTacToe board drawn successfully');
 }
 
 function handleTTT(i) {

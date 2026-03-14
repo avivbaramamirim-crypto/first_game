@@ -132,8 +132,15 @@ function updateMemUI() {
 }
 
 function aiMemMove() {
+    console.log('Memory AI move - Current turn:', mTurn, 'Mode:', window.currentGameMode, 'Lock:', mLock);
+    
     const availableCards = mCards.map((c,i) => !c.match && !c.open ? i : null).filter(v => v !== null);
-    if (availableCards.length < 2) return;
+    console.log('Available cards for AI:', availableCards.length);
+    
+    if (availableCards.length < 2) {
+        console.log('Not enough cards available for AI');
+        return;
+    }
     
     // AI difficulty-based strategy
     let firstCard = null;

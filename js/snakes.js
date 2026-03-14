@@ -77,7 +77,7 @@ function drawSnakes() {
         number.innerText = i;
         sq.appendChild(number);
         
-        // Add players
+        // Add players with clear labels
         if (sP[0] === i) {
             const player1 = document.createElement('div');
             player1.style.position = 'absolute';
@@ -89,6 +89,7 @@ function drawSnakes() {
             player1.style.left = '2px';
             player1.style.border = '2px solid white';
             player1.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+            player1.title = 'שחקן (אדום)';
             sq.appendChild(player1);
         }
         if (sP[1] === i) {
@@ -102,6 +103,7 @@ function drawSnakes() {
             player2.style.left = '2px';
             player2.style.border = '2px solid white';
             player2.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+            player2.title = 'מחשב (כחול)';
             sq.appendChild(player2);
         }
         
@@ -117,17 +119,109 @@ window.rollSnakesDice = function() {
     }
     const r = Math.floor(Math.random() * 6) + 1;
     console.log('Rolled:', r);
-    movePlayer(0, r);
+    
+    // Show dice result
+    showDiceResult(r);
+    
+    // Move after a short delay to show the dice
+    setTimeout(() => {
+        movePlayer(0, r);
+    }, 500);
 };
 
 function movePlayer(idx, r) {
+    const oldPos = sP[idx];
     sP[idx] += r;
-    if (sP[idx] >= 100) { sP[idx] = 100; drawSnakes(); window.triggerEndgameAnim('win', idx===0?"ניצחת!":"המחשב ניצח"); return; }
-    if (BoardSL[sP[idx]]) sP[idx] = BoardSL[sP[idx]];
+    
+    console.log(`Player ${idx} moved from ${oldPos} to ${sP[idx]} (rolled ${r})`);
+    
+    if (sP[idx] >= 100) { 
+        sP[idx] = 100; 
+        drawSnakes(); 
+        window.triggerEndgameAnim('win', idx===0?"ניצחת!":"המחשב ניצח"); 
+        return; 
+    }
+    
+    // Check for snake or ladder
+    if (BoardSL[sP[idx]]) {
+        const newPos = BoardSL[sP[idx]];
+        if (newPos > sP[idx]) {
+            console.log(`Player ${idx} found a ladder! Moving from ${sP[idx]} to ${newPos}`);
+        } else {
+            console.log(`Player ${idx} found a snake! Sliding from ${sP[idx]} to ${newPos}`);
+        }
+        sP[idx] = newPos;
+    }
+    
     drawSnakes();
     sT = 1 - idx;
     updateSnkUI();
     if (sT === 1 && window.currentGameMode === 'ai') setTimeout(aiRoll, 1000);
+}
+
+function showDiceResult(roll) {
+    const diceContainer = document.getElementById('snakes-dice-container');
+    if (!diceContainer) return;
+    
+    // Create dice display
+    diceContainer.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+        ">
+            <div style="
+                font-size: 3rem;
+                margin: 10px 0;
+                animation: bounce 0.5s ease-in-out;
+            ">🎲</div>
+            <div style="
+                font-size: 2rem;
+                font-weight: bold;
+                color: #333;
+                margin: 10px 0;
+            ">${roll}</div>
+            <div style="
+                font-size: 1rem;
+                color: #666;
+                margin: 10px 0;
+            ">הקוביה נזרקה!</div>
+        </div>
+    `;
+    
+    // Hide dice after 1.5 seconds
+    setTimeout(() => {
+        diceContainer.innerHTML = '';
+    }, 1500);
+}
+
+function updateSnkUI() {
+    window.updateStatus('snk-status', sT===0?"תורך":"תור המחשב", true);
+    document.getElementById('snk-dice-btn').disabled = (sT !== 0);
+    
+    // Update score display
+    const scoreDisplay = document.getElementById('snk-score-display');
+    if (scoreDisplay) {
+        scoreDisplay.innerHTML = `
+            <div style="display: flex; justify-content: space-around; margin: 10px 0;">
+                <div style="text-align: center;">
+                    <div style="color: red; font-weight: bold;">שחקן</div>
+                    <div style="font-size: 1.2rem;">מיקום: ${sP[0]}</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="color: blue; font-weight: bold;">מחשב</div>
+                    <div style="font-size: 1.2rem;">מיקום: ${sP[1]}</div>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function aiRoll() {

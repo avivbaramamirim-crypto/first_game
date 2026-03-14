@@ -90,7 +90,11 @@ function updateChessStatus() {
 
 
 function makeRandomMove() {
+    console.log('Chess AI - makeRandomMove called, current turn:', chessGame.turn(), 'mode:', window.currentGameMode);
+    
     const moves = chessGame.moves({ verbose: true });
+    console.log('Available moves:', moves.length);
+    
     if (moves.length > 0) {
         // AI difficulty-based logic
         let bestMove = null;

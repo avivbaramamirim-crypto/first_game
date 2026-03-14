@@ -131,7 +131,12 @@ function handleChk(r, c) {
                 return;
             }
             
-            if (window.currentGameMode === 'ai' && chkT === 'b') setTimeout(makeRandomMove, 800);
+            if (window.currentGameMode === 'ai' && chkT === 'b') {
+                console.log('Checkers - Triggering AI move after player move');
+                setTimeout(makeRandomMove, 800);
+            } else {
+                console.log('Checkers - Not triggering AI. Mode:', window.currentGameMode, 'Turn:', chkT);
+            }
         } else if (isJump && !chkB[r][c]) {
             const midR = Math.floor((r + chkS.r) / 2);
             const midC = Math.floor((c + chkS.c) / 2);
