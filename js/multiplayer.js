@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// הגדרות ה-Firebase שלך (מאומתות)
+// הגדרות ה-Firebase שלך
 const firebaseConfig = {
   apiKey: "AIzaSyDv_vkJBRSMzW0lUBirAAkWD1Lmk8B3Lao",
   authDomain: "first-game-e3fe2.firebaseapp.com",
@@ -35,14 +35,17 @@ async function init() {
             }
         });
     } catch (e) { 
-        console.error("Firebase Auth Error", e); 
+        console.error("Firebase Error", e);
         const statusEl = document.getElementById('connection-status');
         if (statusEl) statusEl.innerText = "שגיאת חיבור ❌";
     }
 }
 
 window.createOnlineRoom = async function() {
-    if (!currentUser || !window.pendingGameToLaunch) return;
+    if (!currentUser) {
+        alert("המערכת עדיין מתחברת לענן. נסה שוב בעוד רגע.");
+        return;
+    }
     
     const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
@@ -68,7 +71,8 @@ window.createOnlineRoom = async function() {
 };
 
 window.joinOnlineRoom = async function() {
-    const roomId = document.getElementById('room-input').value.trim().toUpperCase();
+    const roomIdInput = document.getElementById('room-input');
+    const roomId = roomIdInput ? roomIdInput.value.trim().toUpperCase() : null;
     if (!roomId) return;
     
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
@@ -94,11 +98,9 @@ function listenToRoom(roomId) {
     onSnapshot(roomRef, (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
-        
         if (data.lastMoveBy && data.lastMoveBy !== currentUser.uid) {
             if (window.syncLocalGame) window.syncLocalGame(data.game, data.state);
         }
-        
         if (data.status === 'active' && window.currentGameMode !== 'online') {
             window.launchGame('online');
         }

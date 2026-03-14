@@ -20,26 +20,17 @@ body {
 
 .status-bar { font-size: 0.85em; margin-bottom: 15px; font-weight: bold; color: #7f8c8d; }
 
-/* לובי אונליין */
 .lobby-card {
     background: #fdf5e6; padding: 20px; border-radius: 12px;
     border: 2px solid var(--wood); margin: 20px 0; text-align: right;
 }
-.lobby-section { margin-bottom: 20px; }
-.instruction { font-size: 0.9em; color: #555; margin-bottom: 10px; }
-.separator { text-align: center; font-weight: bold; margin: 15px 0; color: #95a5a6; position: relative; }
-.separator::before, .separator::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd; }
-.separator::before { left: 0; } .separator::after { right: 0; }
 
 .room-code-tag {
     background: #e67e22; color: white; padding: 5px 15px;
     border-radius: 5px; font-size: 1.2em; letter-spacing: 2px; display: inline-block;
+    margin: 10px 0;
 }
 
-.pulse { animation: pulse-animation 2s infinite; }
-@keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-/* רשת כפתורים */
 .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .menu-btn {
     padding: 20px; background: var(--primary); color: white;
@@ -51,21 +42,25 @@ body {
 .join-btn { background: #2980b9; }
 .back-btn { background: #95a5a6; margin-top: 15px; }
 
-.join-input-group { display: flex; gap: 10px; }
+.join-input-group { display: flex; gap: 10px; margin-top: 10px; }
 #room-input { flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
 
-/* מודלים */
-#mode-modal-overlay {
+#mode-modal-overlay, #endgame-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000;
 }
-.modal-box { background: white; padding: 25px; border-radius: 12px; width: 320px; }
+.modal-box { background: white; padding: 25px; border-radius: 12px; width: 320px; text-align: center; }
 .mode-btn { width: 100%; padding: 12px; margin-bottom: 8px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
 .mode-btn.ai { background: #c0392b; }
 .mode-btn.pvp { background: #2980b9; }
 .mode-btn.online-mode { background: var(--success); }
 .mode-btn.cancel { background: #95a5a6; }
 
-.game-screen { display: none; }
-.game-board-container { width: 400px; margin: 0 auto; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-.info-panel { background: #f8f9fa; padding: 15px; margin-top: 15px; border-radius: 8px; }
+.pulse { animation: pulse-animation 2s infinite; }
+@keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+.separator { text-align: center; font-weight: bold; margin: 15px 0; color: #95a5a6; position: relative; }
+.separator::before, .separator::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd; }
+.separator::before { left: 0; } .separator::after { right: 0; }
+
+.instruction { font-size: 0.9em; color: #555; margin-bottom: 5px; }
