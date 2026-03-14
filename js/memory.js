@@ -87,8 +87,13 @@ function drawMem() {
 }
 
 function handleMemClick(i) {
+    console.log('Memory click - Position:', i, 'Current turn:', mTurn, 'Mode:', window.currentGameMode, 'Card state:', mCards[i]);
+    
     if (mLock || mCards[i].open || mCards[i].match) return;
-    if (window.currentGameMode === 'ai' && mTurn === 'p2') return;
+    if (window.currentGameMode === 'ai' && mTurn === 'p2') {
+        console.log('Blocking human move - AI turn');
+        return;
+    }
 
     mCards[i].open = true; mFlipped.push(i);
     drawMem();

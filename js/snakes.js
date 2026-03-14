@@ -23,14 +23,88 @@ window.initSnakes = function() {
 
 function drawSnakes() {
     const b = document.getElementById('snakesBoard');
-    b.innerHTML = ''; b.style.display = 'grid'; b.style.gridTemplateColumns = 'repeat(10, 1fr)';
+    b.innerHTML = ''; 
+    b.style.display = 'grid'; 
+    b.style.gridTemplateColumns = 'repeat(10, 1fr)';
+    b.style.gap = '2px';
+    b.style.padding = '10px';
+    b.style.background = '#f0f0f0';
+    b.style.borderRadius = '10px';
+    b.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+    
     for (let i = 100; i >= 1; i--) {
         const sq = document.createElement('div');
-        sq.style.border = '1px solid rgba(0,0,0,0.1)'; sq.style.position = 'relative';
-        sq.style.display = 'flex'; sq.style.alignItems = 'center'; sq.style.justifyContent = 'center';
-        sq.innerText = i;
-        if (sP[0] === i) sq.innerHTML += '<div style="background:red;width:15px;height:15px;border-radius:50%;position:absolute;top:2px;"></div>';
-        if (sP[1] === i) sq.innerHTML += '<div style="background:blue;width:15px;height:15px;border-radius:50%;position:absolute;bottom:2px;"></div>';
+        sq.style.border = '1px solid rgba(0,0,0,0.1)'; 
+        sq.style.position = 'relative';
+        sq.style.display = 'flex'; 
+        sq.style.alignItems = 'center'; 
+        sq.style.justifyContent = 'center';
+        sq.style.fontSize = '0.8rem';
+        sq.style.fontWeight = 'bold';
+        sq.style.padding = '5px';
+        sq.style.minHeight = '40px';
+        sq.style.background = '#ffffff';
+        sq.style.borderRadius = '4px';
+        
+        // Add colors for special squares
+        if (BoardSL[i]) {
+            if (BoardSL[i] > i) {
+                // Ladder - green
+                sq.style.background = 'linear-gradient(135deg, #4caf50, #8bc34a)';
+                sq.style.color = 'white';
+                sq.style.fontWeight = 'bold';
+            } else {
+                // Snake - red
+                sq.style.background = 'linear-gradient(135deg, #f44336, #e91e63)';
+                sq.style.color = 'white';
+                sq.style.fontWeight = 'bold';
+            }
+        }
+        
+        // Add snake/ladder indicators
+        if (BoardSL[i]) {
+            const indicator = document.createElement('div');
+            indicator.style.position = 'absolute';
+            indicator.style.fontSize = '1.2rem';
+            indicator.style.top = '2px';
+            indicator.style.right = '2px';
+            indicator.innerHTML = BoardSL[i] > i ? '🪜' : '🐍';
+            sq.appendChild(indicator);
+        }
+        
+        // Add number
+        const number = document.createElement('div');
+        number.innerText = i;
+        sq.appendChild(number);
+        
+        // Add players
+        if (sP[0] === i) {
+            const player1 = document.createElement('div');
+            player1.style.position = 'absolute';
+            player1.style.background = 'red';
+            player1.style.width = '15px';
+            player1.style.height = '15px';
+            player1.style.borderRadius = '50%';
+            player1.style.top = '2px';
+            player1.style.left = '2px';
+            player1.style.border = '2px solid white';
+            player1.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+            sq.appendChild(player1);
+        }
+        if (sP[1] === i) {
+            const player2 = document.createElement('div');
+            player2.style.position = 'absolute';
+            player2.style.background = 'blue';
+            player2.style.width = '15px';
+            player2.style.height = '15px';
+            player2.style.borderRadius = '50%';
+            player2.style.bottom = '2px';
+            player2.style.left = '2px';
+            player2.style.border = '2px solid white';
+            player2.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+            sq.appendChild(player2);
+        }
+        
         b.appendChild(sq);
     }
 }

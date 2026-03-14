@@ -4,6 +4,8 @@
 let tttB = Array(9).fill(null), tttT = 'X';
 
 window.initTicTacToe = function() {
+    console.log('Initializing TicTacToe...');
+    
     tttB = Array(9).fill(null); 
     tttT = 'X';
     
@@ -13,12 +15,16 @@ window.initTicTacToe = function() {
         return;
     }
     
+    console.log('TicTacToe board element found, clearing and drawing...');
+    
     // Ensure clean state
     boardEl.innerHTML = '';
     boardEl.style.display = 'grid';
     
     drawTTT();
     updateTTTStatus();
+    
+    console.log('TicTacToe initialization completed');
 };
 
 function checkTTTWin() {
@@ -130,6 +136,8 @@ function handleTTT(i) {
 }
 
 function makeTTTAIMove() {
+    console.log('TTT AI move - Current turn:', tttT, 'Available moves:', tttB.map((cell, index) => cell === null ? index : null).filter(val => val !== null));
+    
     const winner = checkTTTWin();
     if (winner) return;
 
@@ -195,11 +203,13 @@ function makeTTTAIMove() {
         }
         
         if (move !== null && tttB[move] === null) {
+            console.log('TTT AI making move:', move, 'at position', move);
             tttB[move] = 'O';
         } else {
             // Fallback to random move if something went wrong
             if(availableMoves.length > 0){
                 const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                console.log('TTT AI making fallback move:', randomMove);
                 tttB[randomMove] = 'O';
             }
         }

@@ -260,85 +260,95 @@ function updateChkStatus() {
 }
 
 window.syncLocalGame = function(type, state) {
-    if (type === 'checkers') { chkB = state; chkT = (chkT === 'r') ? 'b' : 'r'; drawCheckers(); updateChkStatus(); }
+if (type === 'checkers') { chkB = state; chkT = (chkT === 'r') ? 'b' : 'r'; drawCheckers(); updateChkStatus(); }
 };
 
 function makeRandomMove() {
-    console.log('AI making move, current turn:', chkT);
+console.log('Checkers AI making move, current turn:', chkT, 'Mode:', window.currentGameMode);
     
-    const availableJumps = [];
-    const availableMoves = [];
+if (chkT !== 'b') {
+console.log('Not AI turn - chkT is:', chkT);
+return;
+}
     
-    // Find all possible moves and jumps for AI (black)
-    for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-            const piece = chkB[r][c];
-            if (piece && piece.color === 'b') {
-                let directions = [];
-                if (piece.king) {
-                    directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-                } else {
-                    directions = [[1, -1], [1, 1]]; // Black moves down
-                }
+const availableJumps = [];
+const availableMoves = [];
+    
+// Find all possible moves and jumps for AI (black)
+for (let r = 0; r < 8; r++) {
+for (let c = 0; c < 8; c++) {
+const piece = chkB[r][c];
+if (piece && piece.color === 'b') {
+let directions = [];
+if (piece.king) {
+directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+} else {
+directions = [[1, -1], [1, 1]]; // Black moves down
+}
                 
-                for (let [dr, dc] of directions) {
-                    const newR = r + dr;
-                    const newC = c + dc;
+for (let [dr, dc] of directions) {
+const newR = r + dr;
+const newC = c + dc;
                     
-                    // Regular moves
-                    if (newR >= 0 && newR < 8 && newC >= 0 && newC < 8 && !chkB[newR][newC]) {
-                        availableMoves.push({ from: { r, c }, to: { r: newR, c: newC } });
-                    }
+// Regular moves
+if (newR >= 0 && newR < 8 && newC >= 0 && newC < 8 && !chkB[newR][newC]) {
+availableMoves.push({ from: { r, c }, to: { r: newR, c: newC } });
+}
                     
-                    // Jumps
-                    const jumpR = r + (dr * 2);
-                    const jumpC = c + (dc * 2);
-                    const midR = r + dr;
-                    const midC = c + dc;
+// Jumps
+const jumpR = r + (dr * 2);
+const jumpC = c + (dc * 2);
+const midR = r + dr;
+const midC = c + dc;
                     
-                    if (jumpR >= 0 && jumpR < 8 && jumpC >= 0 && jumpC < 8 && 
-                        !chkB[jumpR][jumpC] && chkB[midR][midC] && 
-                        chkB[midR][midC].color === 'r') {
-                        availableJumps.push({ 
-                            from: { r, c }, 
-                            to: { r: jumpR, c: jumpC }, 
-                            jump: { r: midR, c: midC }
-                        });
-                    }
-                }
-            }
-        }
-    }
+if (jumpR >= 0 && jumpR < 8 && jumpC >= 0 && jumpC < 8 && 
+!chkB[jumpR][jumpC] && chkB[midR][midC] && 
+chkB[midR][midC].color === 'r') {
+availableJumps.push({ 
+from: { r, c }, 
+to: { r: jumpR, c: jumpC }, 
+jump: { r: midR, c: midC }
+});
+}
+}
+}
+}
+}
     
-    let move;
+console.log('Available jumps:', availableJumps.length, 'Available moves:', availableMoves.length);
     
-    // Must take jumps if available
-    if (availableJumps.length > 0) {
-        move = availableJumps[Math.floor(Math.random() * availableJumps.length)];
-        console.log('AI taking jump:', move);
-    } else if (availableMoves.length > 0) {
-        move = availableMoves[Math.floor(Math.random() * availableMoves.length)];
-        console.log('AI making regular move:', move);
-    } else {
-        console.log('AI has no moves available');
-        return;
-    }
+let move;
     
-    // Execute the move
-    if (move.jump) {
-        chkB[move.jump.r][move.jump.c] = null;
-    }
-    chkB[move.to.r][move.to.c] = chkB[move.from.r][move.from.c];
-    chkB[move.from.r][move.from.c] = null;
+// Must take jumps if available
+if (availableJumps.length > 0) {
+move = availableJumps[Math.floor(Math.random() * availableJumps.length)];
+console.log('AI taking jump:', move);
+} else if (availableMoves.length > 0) {
+move = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+console.log('AI making regular move:', move);
+} else {
+console.log('AI has no moves available');
+return;
+}
     
-    // King promotion
-    if (chkB[move.to.r][move.to.c].color === 'b' && move.to.r === 7) {
-        chkB[move.to.r][move.to.c].king = true;
-        console.log('AI piece promoted to king!');
-    }
+console.log('Executing AI move:', move);
     
-    // Switch turn back to human
-    chkT = 'r';
-    drawCheckers();
-    updateChkStatus();
+// Execute the move
+if (move.jump) {
+chkB[move.jump.r][move.jump.c] = null;
+}
+chkB[move.to.r][move.to.c] = chkB[move.from.r][move.from.c];
+chkB[move.from.r][move.from.c] = null;
+    
+// King promotion
+if (chkB[move.to.r][move.to.c].color === 'b' && move.to.r === 7) {
+chkB[move.to.r][move.to.c].king = true;
+console.log('AI piece promoted to king!');
+}
+    
+// Switch turn back to human
+chkT = 'r';
+drawCheckers();
+updateChkStatus();
+console.log('AI move completed, turn switched to:', chkT);
 }
