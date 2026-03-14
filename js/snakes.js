@@ -37,7 +37,172 @@ function movePlayer(idx, r) {
 }
 
 function aiRoll() {
-    const r = Math.floor(Math.random() * 6) + 1;
+    // AI difficulty-based strategy
+    const myPos = sP[1];
+    const playerPos = sP[0];
+    
+    let bestTarget = -1;
+    let strategy = '';
+    
+    // Check if we can win with this roll
+    for (let roll = 1; roll <= 6; roll++) {
+        const targetPos = Math.min(myPos + roll, 100);
+        if (targetPos === 100) {
+            bestTarget = roll;
+            strategy = 'Winning move!';
+            break;
+        }
+    }
+    
+    // If no immediate win, look for strategic advantages
+    if (bestTarget === -1) {
+        if (window.aiDifficulty === 'easy') {
+            // Easy: Basic strategy with randomness
+            // Prefer ladders but avoid obvious snakes
+            for (let roll = 1; roll <= 6; roll++) {
+                const targetPos = Math.min(myPos + roll, 100);
+                if (BoardSL[targetPos]) {
+                    if (BoardSL[targetPos] > myPos) {
+                        // It's a ladder!
+                        bestTarget = roll;
+                        strategy = `Ladder to ${BoardSL[targetPos]}!`;
+                        break;
+                    }
+                }
+            }
+            
+            // If no ladder found, add randomness
+            if (bestTarget === -1) {
+                const safeRolls = [];
+                for (let roll = 1; roll <= 6; roll++) {
+                    const targetPos = Math.min(myPos + roll, 100);
+                    if (!BoardSL[targetPos] || BoardSL[targetPos] > myPos) {
+                        safeRolls.push(roll);
+                    }
+                }
+                if (safeRolls.length > 0) {
+                    bestTarget = safeRolls[Math.floor(Math.random() * safeRolls.length)];
+                    strategy = 'Safe random roll';
+                } else {
+                    // All rolls lead to snakes, pick the least damaging
+                    let leastDamage = Infinity;
+                    let bestDamagingRoll = 1;
+                    for (let roll = 1; roll <= 6; roll++) {
+                        const targetPos = Math.min(myPos + roll, 100);
+                        if (BoardSL[targetPos] && BoardSL[targetPos] < myPos) {
+                            const damage = myPos - BoardSL[targetPos];
+                            if (damage < leastDamage) {
+                                leastDamage = damage;
+                                bestDamagingRoll = roll;
+                            }
+                        }
+                    }
+                    bestTarget = bestDamagingRoll;
+                    strategy = `Least damaging snake (-${leastDamage})`;
+                }
+            }
+        } else if (window.aiDifficulty === 'medium') {
+            // Medium: Balanced strategy
+            // Look for ladders and avoid snakes
+            let ladderScore = -1;
+            let bestLadderRoll = -1;
+            
+            for (let roll = 1; roll <= 6; roll++) {
+                const targetPos = Math.min(myPos + roll, 100);
+                if (BoardSL[targetPos] && BoardSL[targetPos] > myPos) {
+                    const score = BoardSL[targetPos] - myPos;
+                    if (score > ladderScore) {
+                        ladderScore = score;
+                        bestLadderRoll = roll;
+                    }
+                }
+            }
+            
+            if (bestLadderRoll !== -1) {
+                bestTarget = bestLadderRoll;
+                strategy = `Best ladder (+${ladderScore})`;
+            } else {
+                // No ladders available, choose safest roll
+                const safeRolls = [];
+                for (let roll = 1; roll <= 6; roll++) {
+                    const targetPos = Math.min(myPos + roll, 100);
+                    if (!BoardSL[targetPos] || BoardSL[targetPos] > myPos) {
+                        safeRolls.push(roll);
+                    }
+                }
+                if (safeRolls.length > 0) {
+                    // Prefer higher rolls for more progress
+                    bestTarget = Math.max(...safeRolls);
+                    strategy = 'Safe high roll';
+                } else {
+                    // All rolls lead to snakes, pick the least damaging
+                    let leastDamage = Infinity;
+                    let bestDamagingRoll = 1;
+                    for (let roll = 1; roll <= 6; roll++) {
+                        const targetPos = Math.min(myPos + roll, 100);
+                        if (BoardSL[targetPos] && BoardSL[targetPos] < myPos) {
+                            const damage = myPos - BoardSL[targetPos];
+                            if (damage < leastDamage) {
+                                leastDamage = damage;
+                                bestDamagingRoll = roll;
+                            }
+                        }
+                    }
+                    bestTarget = bestDamagingRoll;
+                    strategy = `Least damaging snake (-${leastDamage})`;
+                }
+            }
+        } else {
+            // Hard: Advanced strategy
+            // Calculate optimal roll with lookahead
+            let bestScore = -Infinity;
+            let bestRoll = 1;
+            
+            for (let roll = 1; roll <= 6; roll++) {
+                const targetPos = Math.min(myPos + roll, 100);
+                let score = 0;
+                
+                // Winning is top priority
+                if (targetPos === 100) {
+                    score += 10000;
+                }
+                
+                // Check for ladders
+                if (BoardSL[targetPos] && BoardSL[targetPos] > myPos) {
+                    score += (BoardSL[targetPos] - myPos) * 10; // Ladder bonus
+                }
+                
+                // Check for snakes (penalty)
+                if (BoardSL[targetPos] && BoardSL[targetPos] < myPos) {
+                    score -= (myPos - BoardSL[targetPos]) * 15; // Snake penalty
+                }
+                
+                // Prefer getting closer to 100
+                score += targetPos * 2;
+                
+                // Consider opponent position
+                const distanceToWin = 100 - playerPos;
+                const myDistanceToWin = 100 - targetPos;
+                if (myDistanceToWin < distanceToWin) {
+                    score += 50; // We're ahead
+                }
+                
+                // Add small randomness for unpredictability
+                score += Math.random() * 5 - 2.5;
+                
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestRoll = roll;
+                }
+            }
+            
+            bestTarget = bestRoll;
+            strategy = `Advanced strategy (score: ${bestScore.toFixed(1)})`;
+        }
+    }
+    
+    const r = bestTarget;
+    console.log(`AI (${window.aiDifficulty}) strategic roll: ${r} (${strategy})`);
     movePlayer(1, r);
 }
 

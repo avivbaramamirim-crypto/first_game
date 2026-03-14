@@ -1,5 +1,11 @@
 window.currentGameMode = 'ai'; 
 window.pendingGameToLaunch = '';
+window.aiDifficulty = 'medium'; // easy, medium, hard
+
+window.setAIDifficulty = function(difficulty) {
+    window.aiDifficulty = difficulty;
+    console.log('AI difficulty set to:', difficulty);
+};
 
 window.showScreen = function(screenId) {
     document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');

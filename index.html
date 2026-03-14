@@ -20,9 +20,16 @@
         <div class="modal-box">
             <h2 id="mode-modal-title" style="color:var(--dark-wood)">משחק</h2>
             <p style="font-weight:bold">איך תרצו לשחק?</p>
-            <button class="mode-btn ai" onclick="window.launchGame('ai')" style="background:#c62828; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">🤖 נגד המחשב</button>
-            <button class="mode-btn pvp" onclick="window.launchGame('pvp')" style="background:#1565c0; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">🧑‍🤝‍🧑 נגד חבר (מקומי)</button>
+            <button class="mode-btn pvp" onclick="window.launchGame('pvp')" style="background:#1565c0; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">�‍🤝‍🧑 נגד חבר (מקומי)</button>
             <button id="online-mode-btn" class="mode-btn" onclick="window.showOnlineLobby()" style="background:#2e7d32; color:white; width:100%; padding:15px; margin-bottom:10px; border-radius:10px; border:none; font-weight:bold; cursor:pointer;">🌐 נגד חבר מרחוק</button>
+            
+            <div style="margin:20px 0; padding:15px 0; border-top:1px solid rgba(255,255,255,0.2); border-bottom:1px solid rgba(255,255,255,0.2);">
+                <p style="font-weight:bold; margin-bottom:15px">🤖 נגד המחשב - בחר רמת קושי:</p>
+                <button class="mode-btn ai" onclick="window.setAIDifficulty('easy'); window.launchGame('ai')" style="background:#4caf50; color:white; width:100%; padding:12px; margin-bottom:8px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">🌟 קל</button>
+                <button class="mode-btn ai" onclick="window.setAIDifficulty('medium'); window.launchGame('ai')" style="background:#ff9800; color:white; width:100%; padding:12px; margin-bottom:8px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">⚡ בינוני</button>
+                <button class="mode-btn ai" onclick="window.setAIDifficulty('hard'); window.launchGame('ai')" style="background:#f44336; color:white; width:100%; padding:12px; margin-bottom:8px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">🔥 קשה</button>
+            </div>
+            
             <button onclick="window.closeModeModal()" style="background:#eee; color:#333; width:100%; padding:10px; border-radius:10px; border:none; cursor:pointer;">ביטול</button>
         </div>
     </div>
