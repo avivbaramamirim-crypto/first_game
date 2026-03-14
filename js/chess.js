@@ -12,6 +12,12 @@ window.initChess = function() {
     // Force clean DOM state
     boardEl.innerHTML = '';
     
+    // Wait for Chessboard library to be available
+    if (typeof Chessboard === 'undefined') {
+        console.error('Chessboard library not loaded');
+        return;
+    }
+    
     if (chessBoard) {
         try {
             chessBoard.destroy();
@@ -28,6 +34,8 @@ window.initChess = function() {
         const role = window.getMyRole();
         orient = role === 'b' ? 'black' : 'white';
     }
+
+    console.log('Initializing chess board with orientation:', orient, 'mode:', window.currentGameMode);
 
     chessBoard = Chessboard('chessBoard', {
         draggable: true, 
@@ -57,7 +65,9 @@ window.initChess = function() {
             }, 50);
         }
     });
+    
     updateStatus();
+    console.log('Chess board initialized successfully');
 };
 
 function highlightSquare(square) {
