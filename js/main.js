@@ -10,7 +10,7 @@ window.playWoodSound = function(cap) {
     try { if (cap) sndCapture.play(); else sndMove.play(); } catch(e) {} 
 }
 
-// ניהול מסכים
+// ניהול מעבר בין מסכים
 window.showScreen = function(screenId) {
     document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
     document.getElementById('menu-screen').style.display = 'none';
@@ -31,25 +31,21 @@ window.closeModeModal = function() {
     document.getElementById('mode-modal-overlay').style.display = 'none'; 
 };
 
-// מעבר ללובי האונליין
+// הצגת הלובי לאונליין
 window.showOnlineLobby = function() {
     window.closeModeModal();
     document.getElementById('lobby-game-name').innerText = "משחק רשת: " + window.pendingGameDisplayName;
-    // איפוס תצוגת חדר קודמת אם היתה
     document.getElementById('active-room-info').style.display = 'none';
     document.getElementById('create-room-btn').style.display = 'inline-block';
     window.showScreen('online-lobby-screen');
 };
 
-// הפעלת המשחק בפועל
+// הפעלת המשחק
 window.launchGame = function(mode) {
     window.currentGameMode = mode;
     window.closeModeModal();
-    
     window.showScreen(window.pendingGameToLaunch + '-screen');
-    
     if (window.pendingGameToLaunch === 'chess') initChess();
-    // כאן יבואו איניציאליזציות של משחקים נוספים
 };
 
 window.closeEndgameOverlay = function() {

@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// הגדרות ה-Firebase שלך
+// הגדרות ה-Firebase שלך (מאומתות)
 const firebaseConfig = {
   apiKey: "AIzaSyDv_vkJBRSMzW0lUBirAAkWD1Lmk8B3Lao",
   authDomain: "first-game-e3fe2.firebaseapp.com",
@@ -34,12 +34,15 @@ async function init() {
                 }
             }
         });
-    } catch (e) { console.error("Firebase connection error", e); }
+    } catch (e) { 
+        console.error("Firebase Auth Error", e); 
+        const statusEl = document.getElementById('connection-status');
+        if (statusEl) statusEl.innerText = "שגיאת חיבור ❌";
+    }
 }
 
-// יצירת חדר
 window.createOnlineRoom = async function() {
-    if (!currentUser) return;
+    if (!currentUser || !window.pendingGameToLaunch) return;
     
     const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
@@ -57,7 +60,6 @@ window.createOnlineRoom = async function() {
     currentRoomId = roomId;
     myRole = 'w';
     
-    // עדכון הממשק למצב המתנה
     document.getElementById('create-room-btn').style.display = 'none';
     document.getElementById('active-room-info').style.display = 'block';
     document.getElementById('display-room-id').innerText = roomId;
@@ -65,13 +67,9 @@ window.createOnlineRoom = async function() {
     listenToRoom(roomId);
 };
 
-// הצטרפות לחדר
 window.joinOnlineRoom = async function() {
     const roomId = document.getElementById('room-input').value.trim().toUpperCase();
-    if (!roomId) {
-        alert("אנא הכנס קוד חדר שקיבלת מהחבר");
-        return;
-    }
+    if (!roomId) return;
     
     const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', roomId);
     const snap = await getDoc(roomRef);
@@ -88,9 +86,7 @@ window.joinOnlineRoom = async function() {
         window.pendingGameToLaunch = data.game;
         listenToRoom(roomId);
         window.launchGame('online');
-    } else {
-        alert("חדר לא נמצא! וודא שהקוד נכון.");
-    }
+    } else { alert("חדר לא נמצא!"); }
 };
 
 function listenToRoom(roomId) {
@@ -99,12 +95,10 @@ function listenToRoom(roomId) {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
         
-        // סנכרון מהלכים
         if (data.lastMoveBy && data.lastMoveBy !== currentUser.uid) {
             if (window.syncLocalGame) window.syncLocalGame(data.game, data.state);
         }
         
-        // מעבר אוטומטי למשחק כשהיריב מתחבר
         if (data.status === 'active' && window.currentGameMode !== 'online') {
             window.launchGame('online');
         }

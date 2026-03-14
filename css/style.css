@@ -1,7 +1,6 @@
 :root {
     --primary: #2c3e50;
     --wood: #b58863;
-    --light-wood: #f0d9b5;
     --bg: #e5e5f7;
     --success: #27ae60;
 }
@@ -21,13 +20,12 @@ body {
 
 .status-bar { font-size: 0.85em; margin-bottom: 15px; font-weight: bold; color: #7f8c8d; }
 
-/* Lobby UI */
+/* לובי אונליין */
 .lobby-card {
     background: #fdf5e6; padding: 20px; border-radius: 12px;
     border: 2px solid var(--wood); margin: 20px 0; text-align: right;
 }
 .lobby-section { margin-bottom: 20px; }
-.lobby-section h3 { margin-top: 0; color: var(--primary); }
 .instruction { font-size: 0.9em; color: #555; margin-bottom: 10px; }
 .separator { text-align: center; font-weight: bold; margin: 15px 0; color: #95a5a6; position: relative; }
 .separator::before, .separator::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd; }
@@ -41,17 +39,14 @@ body {
 .pulse { animation: pulse-animation 2s infinite; }
 @keyframes pulse-animation { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-/* Grid */
+/* רשת כפתורים */
 .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .menu-btn {
     padding: 20px; background: var(--primary); color: white;
     border: none; border-radius: 10px; font-size: 1.1em; cursor: pointer; font-weight: bold;
 }
 
-.action-btn {
-    padding: 12px 20px; border: none; border-radius: 8px;
-    cursor: pointer; font-weight: bold; color: white; transition: 0.2s;
-}
+.action-btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; }
 .create-btn { background: var(--success); width: 100%; }
 .join-btn { background: #2980b9; }
 .back-btn { background: #95a5a6; margin-top: 15px; }
@@ -59,8 +54,8 @@ body {
 .join-input-group { display: flex; gap: 10px; }
 #room-input { flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; }
 
-/* Modals */
-#mode-modal-overlay, #endgame-overlay {
+/* מודלים */
+#mode-modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000;
 }
