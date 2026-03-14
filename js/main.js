@@ -50,6 +50,7 @@ window.launchGame = function(mode) {
     window.closeModeModal();
     
     console.log('Launching game with mode:', mode);
+    console.log('Pending game to launch:', window.pendingGameToLaunch);
     
     const initMap = {
         'chess': window.initChess,
@@ -61,6 +62,8 @@ window.launchGame = function(mode) {
     };
 
     const initFn = initMap[window.pendingGameToLaunch];
+    console.log('Init function found:', typeof initFn, 'for game:', window.pendingGameToLaunch);
+    
     if (typeof initFn === 'function') {
         try {
             // Initialize game FIRST, then show screen with small delay
@@ -92,6 +95,7 @@ window.triggerEndgameAnim = function(type, text) {
 
 // Initialize the menu screen when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('MAIN.JS LOADED - Game center initializing...');
     window.showMenuScreen();
     console.log('Game center initialized');
 });
