@@ -1,18 +1,27 @@
 let c4B = [], c4T = 'red', c4Act = true;
 
 window.initConnect4 = function() {
+    console.log('Initializing Connect4...');
+    
     const boardEl = document.getElementById('c4Board');
     if (!boardEl) {
         console.error('Connect4 board element not found');
         return;
     }
     
+    console.log('Connect4 board element found, clearing and drawing...');
+    
     // Force clean DOM
     boardEl.innerHTML = '';
     
     c4B = Array(6).fill(null).map(() => Array(7).fill(null));
     c4T = 'red'; c4Act = true;
-    updateC4UI(); drawC4();
+    
+    console.log('Connect4 board state initialized, drawing board...');
+    
+    drawC4(); updateC4UI();
+    
+    console.log('Connect4 initialization completed');
 };
 
 function drawC4() {

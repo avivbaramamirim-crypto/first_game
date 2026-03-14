@@ -8,17 +8,26 @@ const BoardSL = {
 };
 
 window.initSnakes = function() {
+    console.log('Initializing Snakes and Ladders...');
+    
     const boardEl = document.getElementById('snakesBoard');
     if (!boardEl) {
         console.error('Snakes board element not found');
         return;
     }
     
+    console.log('Snakes board element found, clearing and drawing...');
+    
     // Force clean DOM
     boardEl.innerHTML = '';
     
     sP = [1, 1]; sT = 0;
+    
+    console.log('Snakes board state initialized, drawing board...');
+    
     updateSnkUI(); drawSnakes();
+    
+    console.log('Snakes initialization completed');
 };
 
 function drawSnakes() {

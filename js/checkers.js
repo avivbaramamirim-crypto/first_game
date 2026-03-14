@@ -4,11 +4,15 @@
 let chkB = [], chkT = 'r', chkS = null;
 
 window.initCheckers = function() {
+    console.log('Initializing Checkers...');
+    
     const boardEl = document.getElementById('checkersBoard');
     if (!boardEl) {
         console.error('Checkers board element not found');
         return;
     }
+    
+    console.log('Checkers board element found, clearing and drawing...');
     
     // Force clean DOM
     boardEl.innerHTML = '';
@@ -17,8 +21,13 @@ window.initCheckers = function() {
     for (let r = 0; r < 3; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 !== 0) chkB[r][c] = { color: 'b', king: false };
     for (let r = 5; r < 8; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 !== 0) chkB[r][c] = { color: 'r', king: false };
     chkT = 'r'; chkS = null;
+    
+    console.log('Checkers board state initialized, drawing board...');
+    
     drawCheckers();
     updateChkStatus();
+    
+    console.log('Checkers initialization completed');
 };
 
 function drawCheckers() {

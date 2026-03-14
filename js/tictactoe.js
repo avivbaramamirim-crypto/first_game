@@ -24,6 +24,8 @@ window.initTicTacToe = function() {
     drawTTT();
     updateTTTStatus();
     
+    console.log('TicTacToe initialization completed - about to call drawTTT');
+    drawTTT();
     console.log('TicTacToe initialization completed');
 };
 

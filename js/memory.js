@@ -3,6 +3,8 @@ let mCards = [], mFlipped = [], mLock = false;
 let mScore = { p1: 0, p2: 0 }, mTurn = 'p1';
 
 window.initMemory = function() {
+    console.log('Initializing Memory game...');
+    
     // Reset all game state first
     mScore = { p1: 0, p2: 0 }; 
     mTurn = 'p1'; 
@@ -15,6 +17,8 @@ window.initMemory = function() {
         return;
     }
     
+    console.log('Memory board element found, clearing and drawing...');
+    
     // Force clean DOM
     boardEl.innerHTML = '';
     
@@ -22,8 +26,12 @@ window.initMemory = function() {
     const deck = [...icons, ...icons].sort(() => Math.random() - 0.5);
     mCards = deck.map((a, i) => ({ a, open: false, match: false }));
     
+    console.log('Memory game state initialized, drawing board...');
+    
     updateMemUI();
     drawMem();
+    
+    console.log('Memory initialization completed');
 };
 
 function drawMem() {
