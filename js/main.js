@@ -1,32 +1,25 @@
 /**
- * ניהול מרכזי - טיפול במעברי מסכים, צלילים ואנימציות סיום
+ * main.js - ניהול מעברים בין מסכים ורישום פונקציות גלובליות
  */
 window.currentGameMode = 'ai'; 
 window.pendingGameToLaunch = '';
 window.pendingGameDisplayName = '';
 
-const sndMove = new Audio('https://cdn.jsdelivr.net/gh/lichess-org/lila@master/public/sound/standard/Move.mp3');
-const sndCapture = new Audio('https://cdn.jsdelivr.net/gh/lichess-org/lila@master/public/sound/standard/Capture.mp3');
-
-window.playWoodSound = function(cap) { 
-    try { if (cap) sndCapture.play(); else sndMove.play(); } catch(e) {} 
-}
-
 window.showScreen = function(screenId) {
     document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
     document.getElementById('menu-screen').style.display = 'none';
     const target = document.getElementById(screenId);
-    if(target) target.style.display = 'block';
+    if (target) target.style.display = 'block';
+    else document.getElementById('menu-screen').style.display = 'block';
 };
 
 window.openModeModal = function(gameKey, displayName) { 
     window.pendingGameToLaunch = gameKey; 
     window.pendingGameDisplayName = displayName;
     
-    // הגבלת אונליין למשחקים שלא תומכים
+    // הגבלת אונליין למשחקים שלא תומכים בו כרגע
     const onlineBtn = document.getElementById('online-mode-btn');
-    if (gameKey === 'memory' || gameKey === 'snakes') onlineBtn.style.display = 'none';
-    else onlineBtn.style.display = 'block';
+    if (onlineBtn) onlineBtn.style.display = (gameKey === 'memory') ? 'none' : 'block';
 
     document.getElementById('mode-modal-title').innerText = displayName;
     document.getElementById('mode-modal-overlay').style.display = 'flex'; 
@@ -49,24 +42,26 @@ window.launchGame = function(mode) {
     window.closeModeModal();
     window.showScreen(window.pendingGameToLaunch + '-screen');
     
-    // אתחול נקי של המשחק הנבחר
-    if (window.pendingGameToLaunch === 'chess') initChess();
-    if (window.pendingGameToLaunch === 'checkers') initCheckers();
-    if (window.pendingGameToLaunch === 'connect4') initConnect4();
-    if (window.pendingGameToLaunch === 'tictactoe') initTicTacToe();
-    if (window.pendingGameToLaunch === 'snakes') initSnakes();
-    if (window.pendingGameToLaunch === 'memory') initMemory();
+    const initFunctions = {
+        'chess': window.initChess,
+        'checkers': window.initCheckers,
+        'connect4': window.initConnect4,
+        'tictactoe': window.initTicTacToe,
+        'snakes': window.initSnakes,
+        'memory': window.initMemory
+    };
+
+    if (typeof initFunctions[window.pendingGameToLaunch] === 'function') {
+        initFunctions[window.pendingGameToLaunch]();
+    } else {
+        console.error("Initialization function not found for:", window.pendingGameToLaunch);
+    }
 };
 
-window.triggerEndgameAnim = function(type, customText) {
+window.triggerEndgameAnim = function(type, text) {
     const overlay = document.getElementById('endgame-overlay');
-    const title = document.getElementById('endgame-title');
-    const icon = document.getElementById('endgame-icon');
-    
-    if (type === 'win') { title.innerText = customText || "ניצחון!"; icon.innerText = "🏆"; }
-    else if (type === 'lose') { title.innerText = "הפסד..."; icon.innerText = "😟"; }
-    else { title.innerText = "תיקו!"; icon.innerText = "🤝"; }
-    
+    document.getElementById('endgame-title').innerText = text || (type === 'win' ? "ניצחון!" : "סיום");
+    document.getElementById('endgame-icon').innerText = type === 'win' ? "🏆" : "🤝";
     overlay.style.display = 'flex';
 };
 
