@@ -6,6 +6,7 @@ let tttB = Array(9).fill(null), tttT = 'X';
 window.initTicTacToe = function() {
     tttB = Array(9).fill(null); tttT = 'X';
     drawTTT();
+    updateTTTStatus();
 };
 
 function drawTTT() {
@@ -31,9 +32,15 @@ function handleTTT(i) {
     tttB[i] = tttT;
     tttT = tttT === 'X' ? 'O' : 'X';
     drawTTT();
+    updateTTTStatus();
     if (window.currentGameMode === 'online') window.broadcastMove(tttB);
 }
 
+function updateTTTStatus() {
+    const turn = tttT === 'X' ? 'X' : 'O';
+    window.updateStatus('ttt-status', `תור ${turn}`, true);
+}
+
 window.syncLocalGame = function(type, state) {
-    if (type === 'tictactoe') { tttB = state; tttT = (tttT === 'X') ? 'O' : 'X'; drawTTT(); }
+    if (type === 'tictactoe') { tttB = state; tttT = (tttT === 'X') ? 'O' : 'X'; drawTTT(); updateTTTStatus(); }
 };

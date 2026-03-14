@@ -20,19 +20,13 @@ window.initChess = function() {
             if (move === null) {
                 return 'snapback';
             }
-            // Clear any highlights and update position
-            chessBoard.position(chessGame.fen());
-            chessBoard.clearHighlights();
-            if (window.currentGameMode === 'ai') setTimeout(makeRandomMove, 500);
-            updateStatus();
-        },
-        onMouseoutSquare: (square, piece) => {
-            // Clear highlights when mouse leaves square
-            chessBoard.clearHighlights();
-        },
-        onSnapbackEnd: () => {
-            // Clear highlights after snapback
-            chessBoard.clearHighlights();
+            // Update position after a short delay to ensure proper rendering
+            setTimeout(() => {
+                chessBoard.position(chessGame.fen());
+                chessBoard.clearHighlights();
+                updateStatus();
+            }, 50);
+            if (window.currentGameMode === 'ai') setTimeout(makeRandomMove, 600);
         }
     });
     updateStatus();

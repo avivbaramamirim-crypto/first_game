@@ -9,6 +9,7 @@ window.initCheckers = function() {
     for (let r = 5; r < 8; r++) for (let c = 0; c < 8; c++) if ((r + c) % 2 !== 0) chkB[r][c] = { color: 'r', king: false };
     chkT = 'r'; chkS = null;
     drawCheckers();
+    updateChkStatus();
 };
 
 function drawCheckers() {
@@ -50,11 +51,17 @@ function handleChk(r, c) {
         if (Math.abs(r - chkS.r) === 1 && !chkB[r][c]) {
             chkB[r][c] = chkB[chkS.r][chkS.c]; chkB[chkS.r][chkS.c] = null;
             chkT = chkT === 'r' ? 'b' : 'r'; chkS = null; drawCheckers();
+            updateChkStatus();
             if (window.currentGameMode === 'online') window.broadcastMove(chkB);
         }
     }
 }
 
+function updateChkStatus() {
+    const turn = chkT === 'r' ? 'אדום' : 'שחור';
+    window.updateStatus('chk-status', `תור ${turn}`, true);
+}
+
 window.syncLocalGame = function(type, state) {
-    if (type === 'checkers') { chkB = state; chkT = (chkT === 'r') ? 'b' : 'r'; drawCheckers(); }
+    if (type === 'checkers') { chkB = state; chkT = (chkT === 'r') ? 'b' : 'r'; drawCheckers(); updateChkStatus(); }
 };
