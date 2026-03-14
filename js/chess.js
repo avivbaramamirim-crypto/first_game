@@ -60,7 +60,7 @@ window.initChess = function() {
             setTimeout(() => {
                 chessBoard.position(chessGame.fen());
                 highlightSquare(t);
-                updateStatus();
+                updateChessStatus();
                 
                 // Trigger AI move after successful player move in AI mode
                 if (window.currentGameMode === 'ai' && chessGame.turn() === 'b') {
@@ -73,7 +73,7 @@ window.initChess = function() {
         }
     });
     
-    updateStatus();
+    updateChessStatus();
     console.log('Chess board initialized successfully');
 };
 
@@ -83,7 +83,7 @@ function highlightSquare(square) {
 }
 
 
-function updateStatus() {
+function updateChessStatus() {
     const turn = chessGame.turn() === 'w' ? "לבן" : "שחור";
     window.updateStatus('chess-status', `תור ${turn}`, true);
 }
@@ -188,7 +188,7 @@ function makeRandomMove() {
             chessGame.move(bestMove.san);
             chessBoard.position(chessGame.fen());
             chessBoard.clearHighlights();
-            updateStatus();
+            updateChessStatus();
             
             console.log(`AI (${window.aiDifficulty}) made move:`, bestMove.san, 'with score:', bestScore.toFixed(1));
         } else {
@@ -197,7 +197,7 @@ function makeRandomMove() {
             chessGame.move(randomMove.san);
             chessBoard.position(chessGame.fen());
             chessBoard.clearHighlights();
-            updateStatus();
+            updateChessStatus();
             console.log(`AI (${window.aiDifficulty}) made fallback move:`, randomMove.san);
         }
         
