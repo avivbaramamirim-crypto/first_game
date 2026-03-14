@@ -45,7 +45,7 @@ function updateStatus() {
 
 
 function makeRandomMove() {
-    const moves = chessGame.moves();
+    const moves = chessGame.moves({ verbose: true });
     if (moves.length > 0) {
         // AI difficulty-based logic
         let bestMove = null;
@@ -56,7 +56,7 @@ function makeRandomMove() {
             
             // Make temporary move to evaluate
             const tempGame = new Chess(chessGame.fen());
-            tempGame.move(move);
+            tempGame.move(move.san);
             
             // Check if this move wins the game
             if (tempGame.in_checkmate()) {
@@ -108,7 +108,7 @@ function makeRandomMove() {
                 
                 // Additional hard mode strategies
                 // Look ahead 1 move for opponent threats
-                const opponentMoves = tempGame.moves();
+                const opponentMoves = tempGame.moves({ verbose: true });
                 let opponentThreats = 0;
                 for (const oppMove of opponentMoves) {
                     if (oppMove.captured) opponentThreats += 10;
@@ -134,7 +134,7 @@ function makeRandomMove() {
         }
         
         // Execute the best move found
-        chessGame.move(bestMove);
+        chessGame.move(bestMove.san);
         chessBoard.position(chessGame.fen());
         chessBoard.clearHighlights();
         updateStatus();

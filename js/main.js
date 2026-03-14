@@ -19,7 +19,15 @@ window.showMenuScreen = function() {
     document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
     document.getElementById('online-lobby-screen').style.display = 'none';
     document.getElementById('mode-modal-overlay').style.display = 'none';
+    document.getElementById('endgame-overlay').style.display = 'none';
     document.getElementById('menu-screen').style.display = 'block';
+    
+    // Clear all game boards to ensure fresh state on next entry
+    const boards = ['chessBoard', 'checkersBoard', 'c4Board', 'memoryBoard', 'snakesBoard', 'tttBoard'];
+    boards.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
 };
 
 window.openModeModal = function(gameKey, displayName) { 
@@ -42,7 +50,6 @@ window.launchGame = function(mode) {
     window.closeModeModal();
     window.showScreen(window.pendingGameToLaunch + '-screen');
     
-    // Debug: log the current mode
     console.log('Launching game with mode:', mode);
     
     const initMap = {
@@ -54,8 +61,14 @@ window.launchGame = function(mode) {
         'memory': window.initMemory
     };
 
-    if (typeof initMap[window.pendingGameToLaunch] === 'function') {
-        initMap[window.pendingGameToLaunch]();
+    const initFn = initMap[window.pendingGameToLaunch];
+    if (typeof initFn === 'function') {
+        try {
+            initFn();
+        } catch (err) {
+            console.error('Error initializing game:', window.pendingGameToLaunch, err);
+            window.updateStatus(window.pendingGameToLaunch + '-status', 'שגיאה בטעינת המשחק', true);
+        }
     }
 };
 
