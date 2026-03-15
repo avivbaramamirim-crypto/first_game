@@ -96,13 +96,14 @@ window.launchGame = function(mode) {
     if (typeof initFn === 'function') {
         console.log('=== CALLING INIT FUNCTION ===');
         try {
-            // Initialize game FIRST, then show screen with small delay
-            initFn();
-            console.log('=== INIT FUNCTION CALLED SUCCESSFULLY ===');
+            // Show screen FIRST so DOM elements have physical dimensions before rendering
+            console.log('=== SHOWING SCREEN ===');
+            window.showScreen(window.pendingGameToLaunch + '-screen');
+            console.log('=== SCREEN SHOWN ===');
+            
             setTimeout(() => {
-                console.log('=== SHOWING SCREEN ===');
-                window.showScreen(window.pendingGameToLaunch + '-screen');
-                console.log('=== SCREEN SHOWN ===');
+                initFn();
+                console.log('=== INIT FUNCTION CALLED SUCCESSFULLY ===');
             }, 50);
         } catch (err) {
             console.error('Error initializing game:', window.pendingGameToLaunch, err);
