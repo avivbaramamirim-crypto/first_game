@@ -21,15 +21,28 @@ window.showScreen = function(screenId) {
         target.style.display = 'block';
         console.log('Showing screen:', screenId);
 
-        // The init function for the game should have already been called, 
-        // which handles the board's specific display properties (e.g., 'grid' or 'block').
-        // Here, we just ensure the container is visible.
+        // The init function for game should have already been called, 
+        // which handles board's specific display properties (e.g., 'grid' or 'block').
+        // Here, we just ensure container is visible.
         const boardContainer = target.querySelector('.game-board-container');
         if (boardContainer) {
             boardContainer.style.visibility = 'visible';
             boardContainer.style.opacity = '1';
             // We do not set 'display' here to avoid overriding game-specific styles.
             console.log('Ensured board visibility for:', boardContainer.id);
+            
+            // Debug: Check actual board elements
+            const boardElement = boardContainer.querySelector('[id*="Board"]');
+            if (boardElement) {
+                console.log('DEBUG - Board element found:', boardElement.id);
+                console.log('DEBUG - Board display:', window.getComputedStyle(boardElement).display);
+                console.log('DEBUG - Board visibility:', window.getComputedStyle(boardElement).visibility);
+                console.log('DEBUG - Board opacity:', window.getComputedStyle(boardElement).opacity);
+                console.log('DEBUG - Board width:', window.getComputedStyle(boardElement).width);
+                console.log('DEBUG - Board height:', window.getComputedStyle(boardElement).height);
+            } else {
+                console.log('DEBUG - No board element found in container!');
+            }
         }
     } else {
         console.error('Screen not found:', screenId);
