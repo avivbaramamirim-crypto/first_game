@@ -146,12 +146,16 @@ body {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    background: red !important;
+    border: 3px solid blue !important;
 }
 
 #c4Board, #memoryBoard {
     display: grid !important;
     visibility: visible !important;
     opacity: 1 !important;
+    background: green !important;
+    border: 3px solid yellow !important;
 }
 
 .game-screen h2 {
