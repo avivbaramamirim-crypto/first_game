@@ -167,9 +167,8 @@ body {
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     max-width: 600px;
     min-height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block !important;
+    position: relative;
 }
 
 .info-panel {
