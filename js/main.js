@@ -8,11 +8,36 @@ window.setAIDifficulty = function(difficulty) {
 };
 
 window.showScreen = function(screenId) {
-    document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+    console.log('=== NEW SHOWSCREEN FUNCTION CALLED ===');
+    console.log('=== SHOWING SCREEN:', screenId, '===');
+    document.querySelectorAll('.game-screen').forEach(s => {
+        s.style.display = 'none';
+        console.log('Hiding screen:', s.id);
+    });
     document.getElementById('menu-screen').style.display = 'none';
     document.getElementById('online-lobby-screen').style.display = 'none';
     const target = document.getElementById(screenId);
-    if (target) target.style.display = 'block';
+    if (target) {
+        target.style.display = 'block';
+        console.log('Showing screen:', screenId, '- display set to block');
+        
+        // Force visibility of board elements
+        const boards = ['chessBoard', 'checkersBoard', 'c4Board', 'memoryBoard', 'snakesBoard', 'tttBoard'];
+        boards.forEach(boardId => {
+            const board = document.getElementById(boardId);
+            if (board) {
+                board.style.display = 'block';
+                board.style.visibility = 'visible';
+                board.style.opacity = '1';
+                console.log('Forced board visibility:', boardId);
+            } else {
+                console.log('Board not found:', boardId);
+            }
+        });
+    } else {
+        console.error('Screen not found:', screenId);
+    }
+    console.log('=== NEW SHOWSCREEN FUNCTION ENDED ===');
 };
 
 window.showMenuScreen = function() {
@@ -114,4 +139,5 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('MAIN.JS LOADED - Game center initializing...');
     window.showMenuScreen();
     console.log('Game center initialized');
+    console.log('=== NEW VERSION OF MAIN.JS LOADED ===');
 });
