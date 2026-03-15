@@ -27,7 +27,7 @@ window.initConnect4 = function() {
 function drawC4() {
     const board = document.getElementById('c4Board');
     board.innerHTML = '';
-    board.style.display = 'grid'; 
+    board.style.setProperty('display', 'grid', 'important'); 
     board.style.gridTemplateColumns = 'repeat(7, 1fr)';
     board.style.gap = '8px';
     board.style.background = '#1e3a8a'; 

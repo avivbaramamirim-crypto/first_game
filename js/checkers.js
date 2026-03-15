@@ -34,7 +34,7 @@ function drawCheckers() {
     const board = document.getElementById('checkersBoard');
     if (!board) return;
     board.innerHTML = '';
-    board.style.display = 'grid';
+    board.style.setProperty('display', 'grid', 'important');
     board.style.gridTemplateColumns = 'repeat(8, 1fr)';
     board.style.gap = '2px';
     board.style.width = '400px';
