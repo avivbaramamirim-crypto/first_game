@@ -39,6 +39,13 @@ window.showScreen = function(screenId) {
             console.log('DEBUG - Board opacity:', window.getComputedStyle(boardContainer).opacity);
             console.log('DEBUG - Board width:', window.getComputedStyle(boardContainer).width);
             console.log('DEBUG - Board height:', window.getComputedStyle(boardContainer).height);
+            console.log('DEBUG - Board z-index:', window.getComputedStyle(boardContainer).zIndex);
+            console.log('DEBUG - Board position:', window.getComputedStyle(boardContainer).position);
+            
+            // Force z-index to ensure visibility
+            boardContainer.style.zIndex = '1000';
+            boardContainer.style.position = 'relative';
+            console.log('DEBUG - Forced z-index to 1000');
         } else {
             console.log('DEBUG - No board container found!');
         }
