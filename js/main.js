@@ -46,6 +46,10 @@ window.showOnlineLobby = function() {
 };
 
 window.launchGame = function(mode) {
+    console.log('=== LAUNCH GAME STARTED ===');
+    console.log('Mode parameter:', mode);
+    console.log('Current pendingGameToLaunch before:', window.pendingGameToLaunch);
+    
     window.currentGameMode = mode;
     window.closeModeModal();
     
@@ -60,22 +64,34 @@ window.launchGame = function(mode) {
         'snakes': window.initSnakes,
         'memory': window.initMemory
     };
+    
+    console.log('Available games in initMap:', Object.keys(initMap));
 
     const initFn = initMap[window.pendingGameToLaunch];
     console.log('Init function found:', typeof initFn, 'for game:', window.pendingGameToLaunch);
+    console.log('Init function exists:', !!initFn);
     
     if (typeof initFn === 'function') {
+        console.log('=== CALLING INIT FUNCTION ===');
         try {
             // Initialize game FIRST, then show screen with small delay
             initFn();
+            console.log('=== INIT FUNCTION CALLED SUCCESSFULLY ===');
             setTimeout(() => {
+                console.log('=== SHOWING SCREEN ===');
                 window.showScreen(window.pendingGameToLaunch + '-screen');
+                console.log('=== SCREEN SHOWN ===');
             }, 50);
         } catch (err) {
             console.error('Error initializing game:', window.pendingGameToLaunch, err);
             window.updateStatus(window.pendingGameToLaunch + '-status', 'שגיאה בטעינת המשחק', true);
         }
+    } else {
+        console.error('=== NO INIT FUNCTION FOUND ===');
+        console.error('Game:', window.pendingGameToLaunch);
+        console.error('Function type:', typeof initFn);
     }
+    console.log('=== LAUNCH GAME ENDED ===');
 };
 
 window.updateStatus = function(elementId, text, isActive) {
