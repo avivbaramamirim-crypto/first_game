@@ -141,11 +141,6 @@ body {
 }
 
 /* Force boards to be visible */
-.game-board-container {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
 
 #chessBoard, #checkersBoard, #snakesBoard, #tttBoard {
     display: block !important;
@@ -174,6 +169,8 @@ body {
     max-width: 600px;
     min-height: 400px;
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     position: relative;
 }
 
