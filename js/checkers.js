@@ -3,6 +3,15 @@
  */
 let chkB = [], chkT = 'r', chkS = null;
 
+// Local helper – lets AI mode work even without external mode wiring
+function getCheckersMode() {
+    if (typeof window !== 'undefined' && window.currentGameMode) {
+        return window.currentGameMode;
+    }
+    // Default to AI vs Human when no global mode is defined
+    return 'ai';
+}
+
 window.initCheckers = function() {
     console.log('Initializing Checkers...');
     
@@ -43,7 +52,10 @@ function drawCheckers() {
     board.style.border = '2px solid #8b4513';
     board.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
     
-    const flipped = (window.currentGameMode === 'online' && window.getMyRole && window.getMyRole() === 'b');
+    const flipped = (typeof window !== 'undefined' &&
+        window.currentGameMode === 'online' &&
+        window.getMyRole &&
+        window.getMyRole() === 'b');
 
     for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
@@ -93,13 +105,13 @@ function handleChk(r, c) {
     }
     
     // In AI mode, only allow human to move red pieces (human plays red)
-    if (window.currentGameMode === 'ai' && chkT === 'b') {
+    if (getCheckersMode() === 'ai' && chkT === 'b') {
         console.log('AI turn - blocking human move');
         return;
     }
     
     // In online mode, only allow moving your own pieces
-    if (window.currentGameMode === 'online') {
+    if (typeof window !== 'undefined' && window.currentGameMode === 'online') {
         const myC = window.getMyRole && window.getMyRole() === 'w' ? 'r' : 'b';
         if (chkT !== myC) {
             console.log('Move blocked - not your turn in online mode');
@@ -135,18 +147,20 @@ function handleChk(r, c) {
             
             chkT = chkT === 'r' ? 'b' : 'r'; 
             chkS = null; 
-            if (window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
+            if (typeof window !== 'undefined' && window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
             drawCheckers();
             updateChkStatus();
             
             // Check for win condition
             if (checkChkWin()) {
                 const winner = chkT === 'r' ? 'שחור' : 'אדום';
-                window.triggerEndgameAnim('win', `${winner} ניצח בדמקה!`);
+                if (typeof window !== 'undefined' && window.triggerEndgameAnim) {
+                    window.triggerEndgameAnim('win', `${winner} ניצח בדמקה!`);
+                }
                 return;
             }
             
-            if (window.currentGameMode === 'ai' && chkT === 'b') {
+            if (getCheckersMode() === 'ai' && chkT === 'b') {
                 console.log('Checkers - Triggering AI move after player move');
                 setTimeout(makeRandomMove, 800);
             } else {
@@ -167,10 +181,10 @@ function handleChk(r, c) {
                 
                 chkT = chkT === 'r' ? 'b' : 'r';
                 chkS = null;
-                if (window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
+                if (typeof window !== 'undefined' && window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
                 drawCheckers();
                 updateChkStatus();
-                if (window.currentGameMode === 'ai' && chkT === 'b') setTimeout(makeRandomMove, 800);
+                if (getCheckersMode() === 'ai' && chkT === 'b') setTimeout(makeRandomMove, 800);
             } else {
                 alert('אכילה לא חוקית - אין כלי לאכול');
                 chkS = null;

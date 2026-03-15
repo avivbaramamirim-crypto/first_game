@@ -3,6 +3,15 @@
  */
 let tttB = Array(9).fill(null), tttT = 'X';
 
+// Local helper – allows AI mode to work without external wiring
+function getTicTacToeMode() {
+    if (typeof window !== 'undefined' && window.currentGameMode) {
+        return window.currentGameMode;
+    }
+    // Default to AI vs Human when no global mode is defined
+    return 'ai';
+}
+
 window.initTicTacToe = function() {
     console.log('Initializing TicTacToe...');
     
@@ -121,13 +130,13 @@ function handleTTT(i) {
     if (tttB[i] || checkTTTWin()) return;
     
     // In AI mode, only allow human to move when it's X's turn
-    if (window.currentGameMode === 'ai' && tttT === 'O') {
+    if (getTicTacToeMode() === 'ai' && tttT === 'O') {
         console.log('AI turn - blocking human move');
         return;
     }
     
     // Only restrict moves in online mode
-    if (window.currentGameMode === 'online') {
+    if (typeof window !== 'undefined' && window.currentGameMode === 'online') {
         const myS = window.getMyRole() === 'w' ? 'X' : 'O';
         if (tttT !== myS) return;
     }
@@ -138,12 +147,12 @@ function handleTTT(i) {
     updateTTTStatus();
     
     // Only broadcast in online mode
-    if (window.currentGameMode === 'online') {
+    if (typeof window !== 'undefined' && window.currentGameMode === 'online') {
         window.broadcastMove(tttB);
     }
     
     // Trigger AI move in AI mode
-    if (window.currentGameMode === 'ai' && tttT === 'O' && !checkTTTWin()) {
+    if (getTicTacToeMode() === 'ai' && tttT === 'O' && !checkTTTWin()) {
         setTimeout(makeTTTAIMove, 800);
     }
 }

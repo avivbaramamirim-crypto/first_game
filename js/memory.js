@@ -2,6 +2,15 @@ const icons = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '
 let mCards = [], mFlipped = [], mLock = false;
 let mScore = { p1: 0, p2: 0 }, mTurn = 'p1';
 
+// Local helper – allows AI mode to work without external wiring
+function getMemoryMode() {
+    if (typeof window !== 'undefined' && window.currentGameMode) {
+        return window.currentGameMode;
+    }
+    // Default to AI vs Human when no global mode is defined
+    return 'ai';
+}
+
 window.initMemory = function() {
     console.log('Initializing Memory game...');
     
@@ -98,7 +107,7 @@ function handleMemClick(i) {
     console.log('Memory click - Position:', i, 'Current turn:', mTurn, 'Mode:', window.currentGameMode, 'Card state:', mCards[i]);
     
     if (mLock || mCards[i].open || mCards[i].match) return;
-    if (window.currentGameMode === 'ai' && mTurn === 'p2') {
+    if (getMemoryMode() === 'ai' && mTurn === 'p2') {
         console.log('Blocking human move - AI turn');
         return;
     }
@@ -127,13 +136,15 @@ function checkMatch() {
     if (mCards.every(c => c.match)) {
         const winText = mScore.p1 > mScore.p2 ? "ניצחת!" : "המחשב ניצח";
         window.triggerEndgameAnim('win', winText);
-    } else if (mTurn === 'p2' && window.currentGameMode === 'ai') {
+    } else if (mTurn === 'p2' && getMemoryMode() === 'ai') {
         setTimeout(aiMemMove, 800);
     }
 }
 
 function updateMemUI() {
-    const turnName = mTurn === 'p1' ? "תורך" : (window.currentGameMode === 'ai' ? "מחשב חושב..." : "תור יריב");
+    const turnName = mTurn === 'p1'
+        ? "תורך"
+        : (getMemoryMode() === 'ai' ? "מחשב חושב..." : "תור יריב");
     window.updateStatus('mem-status', turnName, true);
     const scoreBox = document.getElementById('mem-score-box');
     if (scoreBox) scoreBox.innerText = `אתה: ${mScore.p1} | יריב: ${mScore.p2}`;

@@ -1,6 +1,15 @@
 var chessBoard = null;
 var chessGame = new Chess();
 
+// Local helper – allows AI mode to work even without external mode wiring
+function getChessMode() {
+    if (typeof window !== 'undefined' && window.currentGameMode) {
+        return window.currentGameMode;
+    }
+    // Default to AI vs Human when no global mode is defined
+    return 'ai';
+}
+
 window.initChess = function() {
     // Ensure board element exists and is clean
     const boardEl = document.getElementById('chessBoard');
@@ -30,12 +39,14 @@ window.initChess = function() {
     let orient = 'white'; // Default orientation
     
     // Only set black orientation in online mode with proper role
-    if (window.currentGameMode === 'online' && typeof window.getMyRole === 'function') {
+    if (typeof window !== 'undefined' &&
+        window.currentGameMode === 'online' &&
+        typeof window.getMyRole === 'function') {
         const role = window.getMyRole();
         orient = role === 'b' ? 'black' : 'white';
     }
 
-    console.log('Initializing chess board with orientation:', orient, 'mode:', window.currentGameMode);
+    console.log('Initializing chess board with orientation:', orient, 'mode:', (typeof window !== 'undefined' ? window.currentGameMode : 'none'));
 
     chessBoard = Chessboard('chessBoard', {
         draggable: true, 
@@ -44,10 +55,11 @@ window.initChess = function() {
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
         onDragStart: (s, p) => {
             if (chessGame.game_over()) return false;
-            if (window.currentGameMode === 'ai' && p.charAt(0) === 'b') return false;
+            // In AI mode, human always plays white pieces
+            if (getChessMode() === 'ai' && p.charAt(0) === 'b') return false;
         },
         onDrop: (s, t) => {
-            console.log('Chess onDrop - Mode:', window.currentGameMode, 'Turn before move:', chessGame.turn());
+            console.log('Chess onDrop - Mode:', getChessMode(), 'Turn before move:', chessGame.turn());
             
             const move = chessGame.move({ from: s, to: t, promotion: 'q' });
             if (move === null) {
@@ -63,7 +75,7 @@ window.initChess = function() {
                 updateChessStatus();
                 
                 // Trigger AI move after successful player move in AI mode
-                if (window.currentGameMode === 'ai' && chessGame.turn() === 'b') {
+                if (getChessMode() === 'ai' && chessGame.turn() === 'b') {
                     console.log('Triggering AI move...');
                     setTimeout(makeRandomMove, 600);
                 } else {
@@ -90,7 +102,7 @@ function updateChessStatus() {
 
 
 function makeRandomMove() {
-    console.log('Chess AI - makeRandomMove called, current turn:', chessGame.turn(), 'mode:', window.currentGameMode);
+    console.log('Chess AI - makeRandomMove called, current turn:', chessGame.turn(), 'mode:', getChessMode());
     
     const moves = chessGame.moves({ verbose: true });
     console.log('Available moves:', moves.length);

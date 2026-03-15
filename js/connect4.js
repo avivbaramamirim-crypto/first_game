@@ -1,5 +1,14 @@
 let c4B = [], c4T = 'red', c4Act = true;
 
+// Local helper – allows AI mode to work without external wiring
+function getConnect4Mode() {
+    if (typeof window !== 'undefined' && window.currentGameMode) {
+        return window.currentGameMode;
+    }
+    // Default to AI vs Human when no global mode is defined
+    return 'ai';
+}
+
 window.initConnect4 = function() {
     console.log('Initializing Connect4...');
     
@@ -73,7 +82,7 @@ function drawC4() {
 function handleC4(c) {
     console.log('Connect4 - Column clicked:', c, 'Current turn:', c4T, 'Mode:', window.currentGameMode, 'Active:', c4Act);
     
-    if (!c4Act || (c4T === 'yellow' && window.currentGameMode === 'ai')) {
+    if (!c4Act || (c4T === 'yellow' && getConnect4Mode() === 'ai')) {
         console.log('Move blocked - Not active or AI turn');
         return;
     }
@@ -101,10 +110,10 @@ function handleC4(c) {
             return;
         }
         
-        if (c4T === 'yellow' && window.currentGameMode === 'ai') {
+        if (c4T === 'yellow' && getConnect4Mode() === 'ai') {
             console.log('Triggering AI turn for yellow');
             setTimeout(aiC4, 800);
-        } else if (window.currentGameMode === 'ai') {
+        } else if (getConnect4Mode() === 'ai') {
             console.log('AI should not be triggered - it\'s human turn for red');
         }
     }
@@ -122,7 +131,7 @@ function checkC4Win(r, c) {
 }
 
 function aiC4() {
-    console.log('Connect4 AI called, current turn:', c4T, 'mode:', window.currentGameMode);
+    console.log('Connect4 AI called, current turn:', c4T, 'mode:', getConnect4Mode());
     
     // Simple AI for now - can be enhanced later
     const availableCols = [];

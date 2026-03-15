@@ -7,6 +7,15 @@ const BoardSL = {
     99:54, 95:75, 93:73, 87:24, 64:60, 56:37, 48:23, 39:2, 31:10, 24:16, 12:5, 8:3, 74:53, 82:61, 90:78, 96:87
 };
 
+// Local helper – allows AI mode to work without external wiring
+function getSnakesMode() {
+    if (typeof window !== 'undefined' && window.currentGameMode) {
+        return window.currentGameMode;
+    }
+    // Default to AI vs Human when no global mode is defined
+    return 'ai';
+}
+
 window.initSnakes = function() {
     console.log('Initializing Snakes and Ladders...');
     
@@ -89,9 +98,8 @@ function drawSnakes() {
         // Add click handler for dice rolling
         sq.onclick = () => {
             console.log('Square clicked:', i, 'Current turn:', sT);
-            if (sT === 0 && window.currentGameMode === 'pvp') {
-                window.rollSnakesDice();
-            } else if (window.currentGameMode === 'ai' && sT === 0) {
+            const mode = getSnakesMode();
+            if (sT === 0 && (mode === 'pvp' || mode === 'ai')) {
                 window.rollSnakesDice();
             } else {
                 console.log('Not your turn to roll dice!');
@@ -133,7 +141,7 @@ function drawSnakes() {
 }
 
 window.rollSnakesDice = function() {
-    console.log('Dice rolled! Current turn:', sT, 'Mode:', window.currentGameMode);
+    console.log('Dice rolled! Current turn:', sT, 'Mode:', getSnakesMode());
     if (sT !== 0) {
         console.log('Not your turn!');
         return;
@@ -230,6 +238,11 @@ function movePlayer(idx, r) {
                 </div>
             </div>
         `;
+    }
+    
+    // If playing vs AI and it's now the computer's turn, let AI roll automatically
+    if (getSnakesMode() === 'ai' && sT === 1) {
+        setTimeout(aiRoll, 800);
     }
 }
 
