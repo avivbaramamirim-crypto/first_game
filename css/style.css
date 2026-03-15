@@ -135,6 +135,19 @@ body {
     padding: 20px;
 }
 
+/* Force boards to be visible */
+.game-board-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#chessBoard, #checkersBoard, #c4Board, #memoryBoard, #snakesBoard, #tttBoard {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 .game-screen h2 {
     color: var(--dark-wood);
     margin-bottom: 20px;
