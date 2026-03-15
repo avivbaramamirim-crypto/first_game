@@ -86,6 +86,12 @@ function drawCheckers() {
 function handleChk(r, c) {
     console.log('Checkers - Mode:', window.currentGameMode, 'Turn:', chkT, 'Click:', r, c);
     
+    // Validate board bounds
+    if (r < 0 || r >= 8 || c < 0 || c >= 8) {
+        console.error('Invalid board position:', r, c);
+        return;
+    }
+    
     // In AI mode, only allow human to move red pieces (human plays red)
     if (window.currentGameMode === 'ai' && chkT === 'b') {
         console.log('AI turn - blocking human move');

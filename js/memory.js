@@ -142,6 +142,11 @@ function updateMemUI() {
 function aiMemMove() {
     console.log('Memory AI move - Current turn:', mTurn, 'Mode:', window.currentGameMode, 'Lock:', mLock);
     
+    if (mLock) {
+        console.log('Memory is locked - AI waiting');
+        return;
+    }
+    
     const availableCards = mCards.map((c,i) => !c.match && !c.open ? i : null).filter(v => v !== null);
     console.log('Available cards for AI:', availableCards.length);
     
@@ -149,6 +154,10 @@ function aiMemMove() {
         console.log('Not enough cards available for AI');
         return;
     }
+    
+    // Lock the game while AI thinks
+    mLock = true;
+    console.log('Memory locked for AI move');
     
     // AI difficulty-based strategy
     let firstCard = null;

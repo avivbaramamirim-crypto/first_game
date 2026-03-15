@@ -90,9 +90,23 @@ function handleC4(c) {
         drawC4(); c4Act = false;
         window.triggerEndgameAnim('win', (c4T === 'red' ? 'אדום' : 'צהוב') + " ניצח!");
     } else {
+        console.log('Switching turn from', c4T, 'to', c4T === 'red' ? 'yellow' : 'red');
         c4T = c4T === 'red' ? 'yellow' : 'red';
-        drawC4(); updateC4UI();
-        if (c4T === 'yellow' && window.currentGameMode === 'ai') setTimeout(aiC4, 800);
+        drawC4(); 
+        updateC4UI();
+        
+        // Check if game should continue after turn switch
+        if (!c4Act) {
+            console.log('Game is inactive - not triggering next turn');
+            return;
+        }
+        
+        if (c4T === 'yellow' && window.currentGameMode === 'ai') {
+            console.log('Triggering AI turn for yellow');
+            setTimeout(aiC4, 800);
+        } else if (window.currentGameMode === 'ai') {
+            console.log('AI should not be triggered - it\'s human turn for red');
+        }
     }
 }
 

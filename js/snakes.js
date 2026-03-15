@@ -86,6 +86,18 @@ function drawSnakes() {
         number.innerText = i;
         sq.appendChild(number);
         
+        // Add click handler for dice rolling
+        sq.onclick = () => {
+            console.log('Square clicked:', i, 'Current turn:', sT);
+            if (sT === 0 && window.currentGameMode === 'pvp') {
+                window.rollSnakesDice();
+            } else if (window.currentGameMode === 'ai' && sT === 0) {
+                window.rollSnakesDice();
+            } else {
+                console.log('Not your turn to roll dice!');
+            }
+        };
+        
         // Add players with clear labels
         if (sP[0] === i) {
             const player1 = document.createElement('div');
