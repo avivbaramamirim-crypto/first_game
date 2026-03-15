@@ -54,9 +54,8 @@ window.initChess = function() {
         orientation: orient,
         pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
         onDragStart: (s, p) => {
+            // רק ניהול לוח – אין מהלכי מחשב, שני הצדדים נשלטים ע"י המשתמש
             if (chessGame.game_over()) return false;
-            // In AI mode, human always plays white pieces
-            if (getChessMode() === 'ai' && p.charAt(0) === 'b') return false;
         },
         onDrop: (s, t) => {
             console.log('Chess onDrop - Mode:', getChessMode(), 'Turn before move:', chessGame.turn());
@@ -73,14 +72,6 @@ window.initChess = function() {
                 chessBoard.position(chessGame.fen());
                 highlightSquare(t);
                 updateChessStatus();
-                
-                // Trigger AI move after successful player move in AI mode
-                if (getChessMode() === 'ai' && chessGame.turn() === 'b') {
-                    console.log('Triggering AI move...');
-                    setTimeout(makeRandomMove, 600);
-                } else {
-                    console.log('Not triggering AI - Mode:', window.currentGameMode, 'Turn:', chessGame.turn());
-                }
             }, 50);
         }
     });

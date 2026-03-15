@@ -126,67 +126,31 @@ function handleChk(r, c) {
         drawCheckers(); 
     }
     else if (chkS) { 
-        const isJump = Math.abs(r - chkS.r) === 2 && Math.abs(c - chkS.c) === 2;
-        const isMove = Math.abs(r - chkS.r) === 1 && Math.abs(c - chkS.c) === 1;
-
-        if (isMove && !chkB[r][c]) {
-            // Check for mandatory jumps
-            if (hasMandatoryJumps(chkT)) {
-                alert('חייב לבצע אכילה!');
+        // Try to perform a move based on custom rules (no forced capture, long-range king)
+        if (!chkB[r][c]) {
+            if (tryMovePiece(chkS.r, chkS.c, r, c)) {
                 chkS = null;
-                drawCheckers();
-                return;
-            }
-            
-            chkB[r][c] = chkB[chkS.r][chkS.c]; 
-            chkB[chkS.r][chkS.c] = null;
-            
-            // King promotion
-            if (chkB[r][c].color === 'r' && r === 0) chkB[r][c].king = true;
-            if (chkB[r][c].color === 'b' && r === 7) chkB[r][c].king = true;
-            
-            chkT = chkT === 'r' ? 'b' : 'r'; 
-            chkS = null; 
-            if (typeof window !== 'undefined' && window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
-            drawCheckers();
-            updateChkStatus();
-            
-            // Check for win condition
-            if (checkChkWin()) {
-                const winner = chkT === 'r' ? 'שחור' : 'אדום';
-                if (typeof window !== 'undefined' && window.triggerEndgameAnim) {
-                    window.triggerEndgameAnim('win', `${winner} ניצח בדמקה!`);
-                }
-                return;
-            }
-            
-            if (getCheckersMode() === 'ai' && chkT === 'b') {
-                console.log('Checkers - Triggering AI move after player move');
-                setTimeout(makeRandomMove, 800);
-            } else {
-                console.log('Checkers - Not triggering AI. Mode:', window.currentGameMode, 'Turn:', chkT);
-            }
-        } else if (isJump && !chkB[r][c]) {
-            const midR = Math.floor((r + chkS.r) / 2);
-            const midC = Math.floor((c + chkS.c) / 2);
-            const midP = chkB[midR][midC];
-            if (midP && midP.color !== chkT) {
-                chkB[r][c] = chkB[chkS.r][chkS.c];
-                chkB[chkS.r][chkS.c] = null;
-                chkB[midR][midC] = null;
-                
-                // King promotion
-                if (chkB[r][c].color === 'r' && r === 0) chkB[r][c].king = true;
-                if (chkB[r][c].color === 'b' && r === 7) chkB[r][c].king = true;
-                
-                chkT = chkT === 'r' ? 'b' : 'r';
-                chkS = null;
-                if (typeof window !== 'undefined' && window.currentGameMode === 'online' && window.broadcastMove) window.broadcastMove(chkB);
                 drawCheckers();
                 updateChkStatus();
-                if (getCheckersMode() === 'ai' && chkT === 'b') setTimeout(makeRandomMove, 800);
+                
+                // Check for win condition after the move
+                if (checkChkWin()) {
+                    const winner = chkT === 'r' ? 'שחור' : 'אדום';
+                    if (typeof window !== 'undefined' && window.triggerEndgameAnim) {
+                        window.triggerEndgameAnim('win', `${winner} ניצח בדמקה!`);
+                    }
+                    return;
+                }
+                
+                // Trigger AI if relevant
+                if (getCheckersMode() === 'ai' && chkT === 'b') {
+                    console.log('Checkers - Triggering AI move after player move');
+                    setTimeout(makeRandomMove, 800);
+                } else {
+                    console.log('Checkers - Not triggering AI. Mode:', window.currentGameMode, 'Turn:', chkT);
+                }
             } else {
-                alert('אכילה לא חוקית - אין כלי לאכול');
+                alert('מהלך לא חוקי');
                 chkS = null;
                 drawCheckers();
             }
@@ -200,35 +164,96 @@ function handleChk(r, c) {
     }
 }
 
-function hasMandatoryJumps(color) {
-    for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-            const piece = chkB[r][c];
-            if (piece && piece.color === color) {
-                let directions = [];
-                if (piece.king) {
-                    directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-                } else if (piece.color === 'r') {
-                    directions = [[-1, -1], [-1, 1]];
-                } else {
-                    directions = [[1, -1], [1, 1]];
+// Try to move a piece from (fr,fc) to (tr,tc) according to custom rules:
+// - No mandatory capture
+// - Normal pieces move/capture 1 or 2 diagonals forward
+// - Kings are long-range: can move diagonally multiple squares and capture over distance
+function tryMovePiece(fr, fc, tr, tc) {
+    const piece = chkB[fr][fc];
+    if (!piece) return false;
+    
+    const dr = tr - fr;
+    const dc = tc - fc;
+    
+    // Must stay on board
+    if (tr < 0 || tr >= 8 || tc < 0 || tc >= 8) return false;
+    
+    // Diagonal move only
+    if (Math.abs(dr) !== Math.abs(dc)) return false;
+    
+    // Long-range king logic
+    if (piece.king) {
+        const stepR = dr > 0 ? 1 : -1;
+        const stepC = dc > 0 ? 1 : -1;
+        let r = fr + stepR;
+        let c = fc + stepC;
+        let encounteredEnemy = null;
+        
+        while (r !== tr && c !== tc) {
+            const mid = chkB[r][c];
+            if (mid) {
+                if (mid.color === piece.color) {
+                    // Blocked by own piece
+                    return false;
                 }
-                
-                for (let [dr, dc] of directions) {
-                    const jumpR = r + (dr * 2);
-                    const jumpC = c + (dc * 2);
-                    const midR = r + dr;
-                    const midC = c + dc;
-                    
-                    if (jumpR >= 0 && jumpR < 8 && jumpC >= 0 && jumpC < 8 && 
-                        !chkB[jumpR][jumpC] && chkB[midR][midC] && 
-                        chkB[midR][midC].color !== color) {
-                        return true;
-                    }
+                if (encounteredEnemy) {
+                    // More than one enemy on path – not allowed in single move
+                    return false;
                 }
+                encounteredEnemy = { r, c };
             }
+            r += stepR;
+            c += stepC;
         }
+        
+        // Perform move
+        chkB[tr][tc] = piece;
+        chkB[fr][fc] = null;
+        
+        if (encounteredEnemy) {
+            chkB[encounteredEnemy.r][encounteredEnemy.c] = null;
+        }
+        
+        // Turn switch after one move (even if more captures were possible)
+        chkT = chkT === 'r' ? 'b' : 'r';
+        return true;
     }
+    
+    // Normal (non-king) piece
+    const forwardDir = piece.color === 'r' ? -1 : 1;
+    
+    // Simple move – one step forward diagonally
+    if (Math.abs(dr) === 1 && dr === forwardDir && Math.abs(dc) === 1) {
+        chkB[tr][tc] = piece;
+        chkB[fr][fc] = null;
+        
+        // Promotion to king when reaching opposite side
+        if (piece.color === 'r' && tr === 0) piece.king = true;
+        if (piece.color === 'b' && tr === 7) piece.king = true;
+        
+        chkT = chkT === 'r' ? 'b' : 'r';
+        return true;
+    }
+    
+    // Capture – two steps diagonally over enemy piece
+    if (Math.abs(dr) === 2 && dr === 2 * forwardDir && Math.abs(dc) === 2) {
+        const midR = (fr + tr) / 2;
+        const midC = (fc + tc) / 2;
+        const midP = chkB[midR][midC];
+        if (!midP || midP.color === piece.color) return false;
+        
+        chkB[tr][tc] = piece;
+        chkB[fr][fc] = null;
+        chkB[midR][midC] = null;
+        
+        // Promotion to king
+        if (piece.color === 'r' && tr === 0) piece.king = true;
+        if (piece.color === 'b' && tr === 7) piece.king = true;
+        
+        chkT = chkT === 'r' ? 'b' : 'r';
+        return true;
+    }
+    
     return false;
 }
 

@@ -82,8 +82,9 @@ function drawC4() {
 function handleC4(c) {
     console.log('Connect4 - Column clicked:', c, 'Current turn:', c4T, 'Mode:', window.currentGameMode, 'Active:', c4Act);
     
-    if (!c4Act || (c4T === 'yellow' && getConnect4Mode() === 'ai')) {
-        console.log('Move blocked - Not active or AI turn');
+    // מצב משחק זה: שני שחקנים אנושיים בלבד – אין מהלכי מחשב
+    if (!c4Act) {
+        console.log('Move blocked - Game not active');
         return;
     }
     
@@ -104,18 +105,7 @@ function handleC4(c) {
         drawC4(); 
         updateC4UI();
         
-        // Check if game should continue after turn switch
-        if (!c4Act) {
-            console.log('Game is inactive - not triggering next turn');
-            return;
-        }
-        
-        if (c4T === 'yellow' && getConnect4Mode() === 'ai') {
-            console.log('Triggering AI turn for yellow');
-            setTimeout(aiC4, 800);
-        } else if (getConnect4Mode() === 'ai') {
-            console.log('AI should not be triggered - it\'s human turn for red');
-        }
+        // אין טריגר ל-AI – המחשב לא מגיב, רק שני שחקנים אנושיים
     }
 }
 

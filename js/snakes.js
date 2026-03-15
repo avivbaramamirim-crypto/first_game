@@ -149,45 +149,66 @@ window.rollSnakesDice = function() {
     const r = Math.floor(Math.random() * 6) + 1;
     console.log('Rolled:', r);
     
-    // Show dice result
+    // Show dice result clearly
     showDiceResult(r);
+    const statusText = `תוצאת הקובייה: ${r}`;
+    window.updateStatus('snk-status', statusText, true);
     
     setTimeout(() => {
-        movePlayer(0, r);
+        movePlayerStepByStep(0, r, r);
     }, 500);
 };
 
-function movePlayer(idx, r) {
-    const oldPos = sP[idx];
-    sP[idx] += r;
-    
-    console.log(`Player ${idx} moved from ${oldPos} to ${sP[idx]} (rolled ${r})`);
-    console.log('Current turn variable sT:', sT);
-    console.log('Player positions:', sP);
-    
-    if (sP[idx] >= 100) { 
-        sP[idx] = 100; 
-        drawSnakes(); 
-        window.triggerEndgameAnim('win', idx===0?"ניצחת!":"המחשב ניצח"); 
-        return; 
-    }
-    
-    // Check for snake or ladder
-    if (BoardSL[sP[idx]]) {
-        const newPos = BoardSL[sP[idx]];
-        if (newPos > sP[idx]) {
-            console.log(`Player ${idx} found a ladder! Moving from ${sP[idx]} to ${newPos}`);
-        } else {
-            console.log(`Player ${idx} found a snake! Sliding from ${sP[idx]} to ${newPos}`);
+// אנימציה צעד-אחר-צעד בהתאם לתוצאת הקובייה
+function movePlayerStepByStep(idx, remaining, totalRoll) {
+    if (remaining <= 0) {
+        // לאחר שסיימנו לזוז – בדיקת נחשים/סולמות וסיום תור
+        if (sP[idx] >= 100) {
+            sP[idx] = 100;
+            drawSnakes();
+            window.triggerEndgameAnim('win', idx===0?"ניצחת!":"המחשב ניצח");
+            return;
         }
-        sP[idx] = newPos;
+        
+        if (BoardSL[sP[idx]]) {
+            const from = sP[idx];
+            const to = BoardSL[sP[idx]];
+            if (to > from) {
+                console.log(`Player ${idx} climbs a ladder from ${from} to ${to}`);
+            } else {
+                console.log(`Player ${idx} slides down a snake from ${from} to ${to}`);
+            }
+            sP[idx] = to;
+            drawSnakes();
+        }
+        
+        // סיום תור
+        sT = 1 - idx;
+        updateSnkUI();
+        console.log('After move - sT:', sT, 'Player positions:', sP);
+        
+        // תור המחשב אוטומטי במצב AI
+        if (getSnakesMode() === 'ai' && sT === 1) {
+            setTimeout(aiRoll, 800);
+        }
+        return;
     }
     
+    const oldPos = sP[idx];
+    if (sP[idx] < 100) {
+        sP[idx] += 1;
+    }
+    console.log(`Player ${idx} step from ${oldPos} to ${sP[idx]} (remaining steps: ${remaining-1})`);
     drawSnakes();
-    sT = 1 - idx;  // Switch turn to other player
-    updateSnkUI();
     
-    console.log('After move - sT:', sT, 'Player positions:', sP);
+    setTimeout(() => {
+        movePlayerStepByStep(idx, remaining - 1, totalRoll);
+    }, 300);
+}
+
+function movePlayer(idx, r) {
+    // שמרנו פונקציה זו רק לתאימות לאחור – מפנה לגרסת האנימציה
+    movePlayerStepByStep(idx, r, r);
     
     // Create dice display
     const diceContainer = document.getElementById('dice-container');
@@ -240,10 +261,7 @@ function movePlayer(idx, r) {
         `;
     }
     
-    // If playing vs AI and it's now the computer's turn, let AI roll automatically
-    if (getSnakesMode() === 'ai' && sT === 1) {
-        setTimeout(aiRoll, 800);
-    }
+    // ההנעת תור ה-AI נעשית כעת מתוך movePlayerStepByStep לאחר סיום המהלך
 }
 
 function aiRoll() {

@@ -107,10 +107,7 @@ function handleMemClick(i) {
     console.log('Memory click - Position:', i, 'Current turn:', mTurn, 'Mode:', window.currentGameMode, 'Card state:', mCards[i]);
     
     if (mLock || mCards[i].open || mCards[i].match) return;
-    if (getMemoryMode() === 'ai' && mTurn === 'p2') {
-        console.log('Blocking human move - AI turn');
-        return;
-    }
+    // במצב הנוכחי – אין מהלכי מחשב, שני שחקנים אנושיים בלבד
 
     mCards[i].open = true; mFlipped.push(i);
     drawMem();
@@ -134,10 +131,8 @@ function checkMatch() {
     updateMemUI(); drawMem();
 
     if (mCards.every(c => c.match)) {
-        const winText = mScore.p1 > mScore.p2 ? "ניצחת!" : "המחשב ניצח";
+        const winText = mScore.p1 > mScore.p2 ? "שחקן 1 ניצח!" : (mScore.p1 < mScore.p2 ? "שחקן 2 ניצח!" : "תיקו!");
         window.triggerEndgameAnim('win', winText);
-    } else if (mTurn === 'p2' && getMemoryMode() === 'ai') {
-        setTimeout(aiMemMove, 800);
     }
 }
 
