@@ -23,9 +23,6 @@ window.initTicTacToe = function() {
     
     drawTTT();
     updateTTTStatus();
-    
-    console.log('TicTacToe initialization completed - about to call drawTTT');
-    drawTTT();
     console.log('TicTacToe initialization completed');
 };
 
@@ -63,7 +60,7 @@ function drawTTT() {
     console.log('Board element found, clearing and setting styles...');
     
     b.innerHTML = '';
-    b.style.display = 'grid';
+    b.style.setProperty('display', 'grid', 'important'); // Force grid display
     b.style.gridTemplateColumns = 'repeat(3, 1fr)';
     b.style.gridTemplateRows = 'repeat(3, 1fr)';
     b.style.gap = '8px';

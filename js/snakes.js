@@ -33,7 +33,7 @@ window.initSnakes = function() {
 function drawSnakes() {
     const b = document.getElementById('snakesBoard');
     b.innerHTML = ''; 
-    b.style.display = 'grid'; 
+    b.style.setProperty('display', 'grid', 'important'); // Force grid display
     b.style.gridTemplateColumns = 'repeat(10, 1fr)';
     b.style.gap = '2px';
     b.style.padding = '10px';

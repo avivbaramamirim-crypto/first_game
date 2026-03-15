@@ -37,7 +37,7 @@ window.initMemory = function() {
 function drawMem() {
     const b = document.getElementById('memoryBoard');
     b.innerHTML = '';
-    b.style.display = 'grid'; 
+    b.style.setProperty('display', 'grid', 'important'); // Force grid display
     b.style.gridTemplateColumns = 'repeat(8, 1fr)'; 
     b.style.gap = '15px'; 
     b.style.padding = '20px';
