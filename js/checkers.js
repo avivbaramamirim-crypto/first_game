@@ -291,6 +291,20 @@ console.log('Not AI turn - chkT is:', chkT);
 return;
 }
     
+console.log('Current board state before AI move:');
+for (let r = 0; r < 8; r++) {
+    let rowStr = '';
+    for (let c = 0; c < 8; c++) {
+        const piece = chkB[r][c];
+        if (piece) {
+            rowStr += piece.color + (piece.king ? 'K' : ' ');
+        } else {
+            rowStr += '. ';
+        }
+    }
+    console.log(`Row ${r}: ${rowStr}`);
+}
+    
 const availableJumps = [];
 const availableMoves = [];
     
@@ -355,10 +369,25 @@ console.log('Executing AI move:', move);
     
 // Execute the move
 if (move.jump) {
+console.log('AI executing jump:', move);
 chkB[move.jump.r][move.jump.c] = null;
 }
 chkB[move.to.r][move.to.c] = chkB[move.from.r][move.from.c];
 chkB[move.from.r][move.from.c] = null;
+    
+console.log('AI move executed - new board state:');
+for (let r = 0; r < 8; r++) {
+let rowStr = '';
+for (let c = 0; c < 8; c++) {
+const piece = chkB[r][c];
+if (piece) {
+rowStr += piece.color + (piece.king ? 'K' : ' ');
+} else {
+rowStr += '. ';
+}
+}
+console.log(`Row ${r}: ${rowStr}`);
+}
     
 // King promotion
 if (chkB[move.to.r][move.to.c].color === 'b' && move.to.r === 7) {

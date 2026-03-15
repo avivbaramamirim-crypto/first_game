@@ -144,7 +144,6 @@ window.rollSnakesDice = function() {
     // Show dice result
     showDiceResult(r);
     
-    // Move after a short delay to show the dice
     setTimeout(() => {
         movePlayer(0, r);
     }, 500);
@@ -155,6 +154,8 @@ function movePlayer(idx, r) {
     sP[idx] += r;
     
     console.log(`Player ${idx} moved from ${oldPos} to ${sP[idx]} (rolled ${r})`);
+    console.log('Current turn variable sT:', sT);
+    console.log('Player positions:', sP);
     
     if (sP[idx] >= 100) { 
         sP[idx] = 100; 
@@ -175,17 +176,14 @@ function movePlayer(idx, r) {
     }
     
     drawSnakes();
-    sT = 1 - idx;
+    sT = 1 - idx;  // Switch turn to other player
     updateSnkUI();
-    if (sT === 1 && window.currentGameMode === 'ai') setTimeout(aiRoll, 1000);
-}
-
-function showDiceResult(roll) {
-    const diceContainer = document.getElementById('snakes-dice-container');
-    if (!diceContainer) return;
+    
+    console.log('After move - sT:', sT, 'Player positions:', sP);
     
     // Create dice display
-    diceContainer.innerHTML = `
+    const diceContainer = document.getElementById('dice-container');
+    const diceHTML = `
         <div style="
             position: fixed;
             top: 50%;
@@ -208,7 +206,7 @@ function showDiceResult(roll) {
                 font-weight: bold;
                 color: #333;
                 margin: 10px 0;
-            ">${roll}</div>
+            ">${r}</div>
             <div style="
                 font-size: 1rem;
                 color: #666;
@@ -216,16 +214,6 @@ function showDiceResult(roll) {
             ">הקוביה נזרקה!</div>
         </div>
     `;
-    
-    // Hide dice after 1.5 seconds
-    setTimeout(() => {
-        diceContainer.innerHTML = '';
-    }, 1500);
-}
-
-function updateSnkUI() {
-    window.updateStatus('snk-status', sT===0?"תורך":"תור המחשב", true);
-    document.getElementById('snk-dice-btn').disabled = (sT !== 0);
     
     // Update score display
     const scoreDisplay = document.getElementById('snk-score-display');
