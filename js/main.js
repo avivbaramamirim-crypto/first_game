@@ -32,17 +32,15 @@ window.showScreen = function(screenId) {
             console.log('Ensured board visibility for:', boardContainer.id);
             
             // Debug: Check actual board elements
-            const boardElement = boardContainer.querySelector('[id*="Board"]');
-            if (boardElement) {
-                console.log('DEBUG - Board element found:', boardElement.id);
-                console.log('DEBUG - Board display:', window.getComputedStyle(boardElement).display);
-                console.log('DEBUG - Board visibility:', window.getComputedStyle(boardElement).visibility);
-                console.log('DEBUG - Board opacity:', window.getComputedStyle(boardElement).opacity);
-                console.log('DEBUG - Board width:', window.getComputedStyle(boardElement).width);
-                console.log('DEBUG - Board height:', window.getComputedStyle(boardElement).height);
-            } else {
-                console.log('DEBUG - No board element found in container!');
-            }
+            // The boardContainer IS the board element (not a wrapper)
+            console.log('DEBUG - Board element found:', boardContainer.id);
+            console.log('DEBUG - Board display:', window.getComputedStyle(boardContainer).display);
+            console.log('DEBUG - Board visibility:', window.getComputedStyle(boardContainer).visibility);
+            console.log('DEBUG - Board opacity:', window.getComputedStyle(boardContainer).opacity);
+            console.log('DEBUG - Board width:', window.getComputedStyle(boardContainer).width);
+            console.log('DEBUG - Board height:', window.getComputedStyle(boardContainer).height);
+        } else {
+            console.log('DEBUG - No board container found!');
         }
     } else {
         console.error('Screen not found:', screenId);
