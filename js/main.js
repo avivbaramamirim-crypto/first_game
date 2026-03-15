@@ -19,21 +19,18 @@ window.showScreen = function(screenId) {
     const target = document.getElementById(screenId);
     if (target) {
         target.style.display = 'block';
-        console.log('Showing screen:', screenId, '- display set to block');
-        
-        // Force visibility of board elements
-        const boards = ['chessBoard', 'checkersBoard', 'c4Board', 'memoryBoard', 'snakesBoard', 'tttBoard'];
-        boards.forEach(boardId => {
-            const board = document.getElementById(boardId);
-            if (board) {
-                board.style.display = 'block';
-                board.style.visibility = 'visible';
-                board.style.opacity = '1';
-                console.log('Forced board visibility:', boardId);
-            } else {
-                console.log('Board not found:', boardId);
-            }
-        });
+        console.log('Showing screen:', screenId);
+
+        // The init function for the game should have already been called, 
+        // which handles the board's specific display properties (e.g., 'grid' or 'block').
+        // Here, we just ensure the container is visible.
+        const boardContainer = target.querySelector('.game-board-container');
+        if (boardContainer) {
+            boardContainer.style.visibility = 'visible';
+            boardContainer.style.opacity = '1';
+            // We do not set 'display' here to avoid overriding game-specific styles.
+            console.log('Ensured board visibility for:', boardContainer.id);
+        }
     } else {
         console.error('Screen not found:', screenId);
     }

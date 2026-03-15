@@ -147,20 +147,6 @@
                 window.showMenuScreen();
             }
         });
-        
-        // Force boards to be visible
-        setTimeout(() => {
-            const boards = ['chessBoard', 'checkersBoard', 'c4Board', 'memoryBoard', 'snakesBoard', 'tttBoard'];
-            boards.forEach(boardId => {
-                const board = document.getElementById(boardId);
-                if (board) {
-                    board.style.display = 'block';
-                    board.style.visibility = 'visible';
-                    board.style.opacity = '1';
-                    console.log('HTML Fix - Board forced visible:', boardId);
-                }
-            });
-        }, 1000);
     </script>
 </body>
 </html>
