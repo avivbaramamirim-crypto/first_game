@@ -147,8 +147,14 @@ body {
     opacity: 1 !important;
 }
 
-#chessBoard, #checkersBoard, #c4Board, #memoryBoard, #snakesBoard, #tttBoard {
+#chessBoard, #checkersBoard, #snakesBoard, #tttBoard {
     display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#c4Board, #memoryBoard {
+    display: grid !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
